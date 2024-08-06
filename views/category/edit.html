@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
-  {{ template "_head.html" . }}
+  <head>
+    <title>Inventory - {{ .Title }}</title>
+    {{ template "_head.html" . }}
+  </head>
 
   <body
     id="kt_app_body"
@@ -119,20 +122,16 @@
 
                   <div class="d-flex align-items-center gap-2 gap-lg-3">
                     <a
-                      href="#"
+                      href="/categories"
                       class="btn btn-sm fw-bold btn-secondary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#kt_modal_create_app"
-                      >Rollover</a
                     >
-
-                    <a
-                      href="#"
-                      class="btn btn-sm fw-bold btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#kt_modal_new_target"
-                      >Add Target</a
-                    >
+                      <i class="ki-duotone ki-arrow-left fs-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                      </i>
+                      Back
+                    </a>
                   </div>
                 </div>
               </div>
@@ -142,54 +141,37 @@
                   id="kt_app_content_container"
                   class="app-container container-fluid"
                 >
-                  <div class="card card-flush pt-3 mb-5 mb-lg-10">
+                  <div class="card card-flush pt-3 mb-5 col-lg-4 mx-auto">
                     <div class="card-body pt-0">
-                      <table
-                        class="table align-middle table-row-dashed p-7 fs-6 gy-5"
-                        id="kt_table_users"
-                      >
-                        <thead>
-                          <tr
-                            class="text-start text-gray-600 fw-bolder fs-7 text-uppercase gs-0"
+                      <form action="/categories/edit" method="POST">
+                        <div class="mb-3">
+                          <label for="nama_kategori" class="form-label"
+                            >Nama Kategori</label
                           >
-                            <th class="min-w-125px">Nama Kategori</th>
-                            <th class="min-w-125px">Aksi</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {{ range .categories}}
-                          <tr>
-                            <td>{{.Nama_Kategori}}</td>
-                            <td>
-                              <a
-                                href="/categories/edit?={{.Id}}"
-                                class="btn btn-warning btn-sm"
-                              >
-                                <i class="ki-duotone ki-pencil fs-2">
-                                  <span class="path1"></span>
-                                  <span class="path2"></span>
-                                  <span class="path3"></span>
-                                </i>
-                                Edit
-                              </a>
-                              <a
-                                href="/categories/delete?={{.Id}}"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Are you sure?')"
-                              >
-                                <i class="ki-duotone ki-trash fs-2">
-                                  <span class="path1"></span>
-                                  <span class="path2"></span>
-                                  <span class="path3"></span>
-                                  <span class="path4"></span>
-                                </i>
-                                Hapus
-                              </a>
-                            </td>
-                          </tr>
-                          {{end}}
-                        </tbody>
-                      </table>
+                          <input type="hidden" name="id" value="{{ .category.Id }}">
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="nama"
+                            name="nama_kategori"
+                            value="{{ .category.Nama_Kategori }}"
+                          />
+                        </div>
+                        <div class="d-flex justify-content-end">
+                          <button
+                            type="submit"
+                            class="btn btn-success btn-sm me-2"
+                          >
+                            <i class="ki-duotone ki-send fs-2">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                              <span class="path3"></span>
+                              <span class="path4"></span>
+                            </i>
+                            Save
+                          </button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>

@@ -5,15 +5,13 @@ import (
 	"inventaris/helpers"
 	"inventaris/models/categorymodel"
 	"net/http"
-	"strconv"
 	"time"
 )
-
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	categories := categorymodel.GetAll()
 	data := map[string]any{
-		"Title": "Category",
+		"Title":      "Category",
 		"categories": categories,
 	}
 
@@ -21,11 +19,14 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func Add(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		helpers.RenderTemplate(w, "category/create.html", nil)
+	if r.Method == http.MethodGet {
+		data := map[string]any{
+			"Title": "Add Category",
+		}
+		helpers.RenderTemplate(w, "category/create.html", data)
 	}
 
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		var category entities.Category
 
 		category.Nama_Kategori = r.FormValue("nama_kategori")
@@ -43,40 +44,44 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		} else {
 			http.Error(w, "Failed to create category", http.StatusInternalServerError)
 		}
-
-		http.Redirect(w, r, "/categories", http.StatusSeeOther)
 	}
 }
 
 func Edit(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == http.MethodGet {
 		idString := r.URL.Query().Get("id")
-		id, err := strconv.Atoi(idString)
-		if err != nil {
-			http.Error(w, "Invalid ID Format", http.StatusBadRequest)
+		if idString == "" {
+			http.Error(w, "Missing id parameter", http.StatusBadRequest)
+			return
 		}
 
-		category := categorymodel.Detail(id)
-		data := map[string]any{
+		category, err := categorymodel.Detail(idString)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		data := map[string]interface{}{
+			"Title":    "Edit Category",
 			"category": category,
 		}
 
 		helpers.RenderTemplate(w, "category/edit.html", data)
+		return // Ensure the function exits after handling GET request
 	}
 
-	if (r.Method == "POST") {
-		var category entities.Category
+	if r.Method == http.MethodPost {
 		idString := r.FormValue("id")
-		id, err := strconv.Atoi(idString)
-		if err != nil {
-			panic(err.Error())
+		if idString == "" {
+			http.Error(w, "Missing id parameter", http.StatusBadRequest)
+			return
 		}
 
+		var category entities.Category
 		category.Nama_Kategori = r.FormValue("nama_kategori")
 		category.Updated_At = time.Now()
 
-		if ok := categorymodel.Update(id, category); !ok {
-			http.Redirect(w, r, r.Header.Get("Referer"), http.StatusSeeOther)
+		if ok := categorymodel.Update(idString, category); !ok {
+			http.Error(w, "Failed to update category", http.StatusInternalServerError)
 			return
 		}
 
@@ -86,13 +91,15 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 
 func Delete(w http.ResponseWriter, r *http.Request) {
 	idString := r.URL.Query().Get("id")
-	id, err := strconv.Atoi(idString)
-	if err != nil {
-		panic(err.Error())
+
+	if idString == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
 	}
 
-	if err := categorymodel.Delete(id); err != nil {
-		panic(err.Error())
+	if err := categorymodel.Delete(idString); err != nil {
+		http.Error(w, "Failed to delete category", http.StatusInternalServerError) // Use http.Error instead of panic
+		return
 	}
 
 	http.Redirect(w, r, "/categories", http.StatusSeeOther)

@@ -1,6 +1,8 @@
 package categorymodel
 
 import (
+	"database/sql"
+	"fmt"
 	"inventaris/config"
 	"inventaris/entities"
 
@@ -8,7 +10,7 @@ import (
 )
 
 func GetAll() []entities.Category {
-	rows, err := config.DB.Query(`SELECT * FROM kategori_aset`)
+	rows, err := config.DB.Query(`SELECT * FROM kategori_aset ORDER BY updated_at DESC`)
 	if err != nil {
 		panic(err)
 	}
@@ -52,19 +54,21 @@ func Create(category entities.Category) (bool, error) {
 	return rowsAffected > 0, nil
 }
 
-func Detail(id int) entities.Category {
-	row := config.DB.QueryRow(`SELECT * FROM kategori_aset WHERE id = ?`, id)
+func Detail(id string) (entities.Category, error) {
+	row := config.DB.QueryRow(`SELECT id, nama_kategori, created_at, updated_at FROM kategori_aset WHERE id = ?`, id)
 
 	var category entities.Category
 	if err := row.Scan(&category.Id, &category.Nama_Kategori, &category.Created_At, &category.Updated_At); err != nil {
-		panic(err.Error())
+		if err == sql.ErrNoRows {
+			return category, fmt.Errorf("no category found with id %s", id)
+		}
+		return category, fmt.Errorf("failed to retrieve category: %w", err)
 	}
 
-	return category
+	return category, nil
 }
-
-func Update(id int, category entities.Category) bool {
-	query, err := config.DB.Exec(`UPDATE categories SET nama_kategori = ?, updated_at = ? WHERE id = ?`, category.Nama_Kategori, category.Updated_At, id)
+func Update(id string, category entities.Category) bool {
+	query, err := config.DB.Exec(`UPDATE kategori_aset SET nama_kategori = ?, updated_at = ? WHERE id = ?`, category.Nama_Kategori, category.Updated_At, id)
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +81,7 @@ func Update(id int, category entities.Category) bool {
 	return result > 0
 }
 
-func Delete(id int) error {
-	_, err := config.DB.Exec(`DELETE FROM categories WHERE id = ?`, id)
+func Delete(id string) error {
+	_, err := config.DB.Exec(`DELETE FROM kategori_aset WHERE id = ?`, id)
 	return err
 }
