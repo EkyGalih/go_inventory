@@ -27,6 +27,9 @@ func main() {
 
 	// 3. aset tik
 	http.HandleFunc("/aset_tik", asettikcontroller.Index)
+	http.HandleFunc("/aset_tik/add", asettikcontroller.Add)
+	http.HandleFunc("/aset_tik/edit", asettikcontroller.Edit)
+	http.HandleFunc("/aset_tik/delete", asettikcontroller.Delete)
 
 	log.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)

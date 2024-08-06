@@ -135,7 +135,7 @@
                               class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative image-placeholder kt-spinner kt-spinner--sm kt-spinner--brand"
                             >
                               <img
-                                src="/storage/uploads/aset/faeRcEPRRZB58eNHbyaJIs4keWPpuwcXhGUfHnzj.jpg"
+                                src="{{ .Gambar }}"
                                 alt="Proyektor Epson TW6250 EH-TW6250 4K Enhancement"
                                 class="lazy"
                                 loading="lazy"
@@ -256,7 +256,7 @@
                                         data-kt-countup-prefix="Rp. "
                                         data-kt-initialized="1"
                                       >
-                                        Rp. {{ .Nilai }}
+                                        Rp. {{printf "%.0f" .Nilai}}
                                       </div>
                                     </div>
                                     <div class="fw-semibold fs-6 text-gray-500">

@@ -1,15 +1,13 @@
 package homecontroller
 
 import (
+	"inventaris/helpers"
 	"net/http"
-	"text/template"
 )
 
-func Welcome(w http.ResponseWriter, r *http.Request)  {
-	temp, err := template.ParseFiles("views/home/index.html")
-	if err != nil {
-		panic(err)
+func Welcome(w http.ResponseWriter, r *http.Request) {
+	data := map[string]any{
+		"Title": "Dashboard",
 	}
-
-	temp.Execute(w, nil)
+	helpers.RenderTemplate(w, "home/index.html", data)
 }
