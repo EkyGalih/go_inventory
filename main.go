@@ -11,6 +11,10 @@ import (
 func main() {
 	config.ConnectDB()
 
+	// serve static file from public folder
+	fs := http.FileServer(http.Dir("public"))
+	http.Handle("/public/", http.StripPrefix("/public/", fs))
+
 	// 1. Homepage
 	http.HandleFunc("/", homecontroller.Welcome)
 

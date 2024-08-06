@@ -3,8 +3,8 @@ package entities
 import "time"
 
 type Category struct {
-	Id        uint
-	Name      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id            string
+	Nama_Kategori string
+	Created_At    time.Time
+	Updated_At    time.Time
 }

@@ -2,47 +2,46 @@ package categorycontroller
 
 import (
 	"inventaris/entities"
+	"inventaris/helpers"
 	"inventaris/models/categorymodel"
 	"net/http"
 	"strconv"
-	"text/template"
 	"time"
 )
+
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	categories := categorymodel.GetAll()
 	data := map[string]any{
+		"Title": "Category",
 		"categories": categories,
 	}
 
-	temp, err := template.ParseFiles("views/category/index.html")
-	if err != nil {
-		panic(err)
-	}
-
-	temp.Execute(w, data)
+	helpers.RenderTemplate(w, "category/index.html", data)
 }
 
 func Add(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		temp, err := template.ParseFiles("views/category/create.html")
-		if err != nil {
-			panic(err)
-		}
-
-		temp.Execute(w, nil)
+		helpers.RenderTemplate(w, "category/create.html", nil)
 	}
 
 	if r.Method == "POST" {
 		var category entities.Category
 
-		category.Name = r.FormValue("name")
-		category.CreatedAt = time.Now()
-		category.UpdatedAt = time.Now()
+		category.Nama_Kategori = r.FormValue("nama_kategori")
+		category.Created_At = time.Now()
+		category.Updated_At = time.Now()
 
-		if ok := categorymodel.Create(category); !ok {
-			temp, _ := template.ParseFiles("views/category/create.html")
-			temp.Execute(w, nil)
+		success, err := categorymodel.Create(category)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if success {
+			http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		} else {
+			http.Error(w, "Failed to create category", http.StatusInternalServerError)
 		}
 
 		http.Redirect(w, r, "/categories", http.StatusSeeOther)
@@ -51,15 +50,10 @@ func Add(w http.ResponseWriter, r *http.Request) {
 
 func Edit(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		temp, err := template.ParseFiles("views/category/edit.html")
-		if err != nil {
-			panic(err)
-		}
-
 		idString := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idString)
 		if err != nil {
-			panic(err.Error())
+			http.Error(w, "Invalid ID Format", http.StatusBadRequest)
 		}
 
 		category := categorymodel.Detail(id)
@@ -67,7 +61,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			"category": category,
 		}
 
-		temp.Execute(w, data)
+		helpers.RenderTemplate(w, "category/edit.html", data)
 	}
 
 	if (r.Method == "POST") {
@@ -78,8 +72,8 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 
-		category.Name = r.FormValue("name")
-		category.UpdatedAt = time.Now()
+		category.Nama_Kategori = r.FormValue("nama_kategori")
+		category.Updated_At = time.Now()
 
 		if ok := categorymodel.Update(id, category); !ok {
 			http.Redirect(w, r, r.Header.Get("Referer"), http.StatusSeeOther)
