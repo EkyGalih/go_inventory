@@ -1,4 +1,32 @@
-<script>var hostUrl = "../../public/assets/";</script>
-		<script src="../../public/assets/plugins/global/plugins.bundle.js"></script>
-		<script src="../../public/assets/js/scripts.bundle.js"></script>
-		<script src="../../public/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script>
+  var hostUrl = "../../public/assets/";
+</script>
+<script src="../../public/assets/plugins/global/plugins.bundle.js"></script>
+<script src="../../public/assets/js/scripts.bundle.js"></script>
+<script src="../../public/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script>
+  var loadFile = function (event) {
+    var output = document.getElementById("aset");
+    output.src = URL.createObjectURL(event.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
+
+  function isInputNumber(event) {
+    var char = String.fromCharCode(event.which);
+    if (!/[0-9]/.test(char)) {
+      event.preventDefault();
+    }
+  }
+
+  function formatRupiah(element) {
+    let value = element.value.replace(/[^,\d]/g, "");
+    let parts = value.split(",");
+    let integerPart = parts[0];
+    let decimalPart = parts[1] ? "," + parts[1] : "";
+
+    let rupiah = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    element.value = "Rp " + rupiah + decimalPart;
+  }
+</script>

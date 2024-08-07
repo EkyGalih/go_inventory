@@ -110,7 +110,7 @@
 
                   <div class="d-flex align-items-center gap-2 gap-lg-3">
                     <a
-                      href="/aset_tik/add"
+                      href="/aset-tik/add"
                       class="btn btn-sm fw-bold btn-primary"
                     >
                       <i class="ki-duotone ki-plus fs-2"></i> Add Aset
@@ -124,9 +124,10 @@
                   id="kt_app_content_container"
                   class="app-container container-fluid"
                 >
+                <div class="row g-5 align-items-center mb-5">
                   <div class="table-responsive">
                     {{range .aset_tiks}}
-                    <div class="card mb-6">
+                    <div class="card card-flush pt-3 mb-5 pt-10">
                       <div class="card-body pt-9 pb-0">
                         <div class="d-flex flex-wrap flex-sm-nowrap">
                           <div class="me-7 mb-4">
@@ -135,7 +136,7 @@
                               class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative image-placeholder kt-spinner kt-spinner--sm kt-spinner--brand"
                             >
                               <img
-                                src="{{ .Gambar }}"
+                                src="{{ .Path }}"
                                 alt="Proyektor Epson TW6250 EH-TW6250 4K Enhancement"
                                 class="lazy"
                                 loading="lazy"
@@ -226,15 +227,27 @@
                                   >
                                     <div class="menu-item px-3">
                                       <a
-                                        href="http://bpkad.test/admin/inventaris/aset-tik/edit/aeaaadc0-dbcd-4b6f-94a1-bcd2e7652bc4"
+                                        href="/aset-tik/edit?id={{ .Id }}"
                                         class="menu-link px-3"
                                       >
+                                      <i class="ki-duotone ki-pencil fs-2 mr-15">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                      </i>
                                         Edit
                                       </a>
                                       <a
-                                        href="http://bpkad.test/admin/inventaris/aset-tik/destroy/aeaaadc0-dbcd-4b6f-94a1-bcd2e7652bc4"
+                                        href="/aset-tik/delete?id={{ .Id }}"
                                         class="menu-link px-3"
                                       >
+                                      <i class="ki-duotone ki-trash fs-2 mr-5">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                      </i>
                                         Hapus
                                       </a>
                                     </div>
@@ -260,7 +273,7 @@
                                       </div>
                                     </div>
                                     <div class="fw-semibold fs-6 text-gray-500">
-                                      Nilai
+                                      Nilai Aset
                                     </div>
                                   </div>
                                   <div
@@ -277,7 +290,7 @@
                                       </div>
                                     </div>
                                     <div class="fw-semibold fs-6 text-gray-500">
-                                      Jumlah
+                                      Jumlah Aset
                                     </div>
                                   </div>
                                   <div
@@ -329,6 +342,7 @@
                       </div>
                     </div>
                     {{ end }}
+                  </div>
                   </div>
                 </div>
               </div>

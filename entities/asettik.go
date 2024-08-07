@@ -14,10 +14,11 @@ type AsetTik struct {
 	Deskripsi         *string `gorm:"type:text"`
 	Kategori_id       string  `gorm:"index"`
 	Tanggal_Perolehan time.Time
-	Status            string `gorm:"type:ENUM('Baru','Rusak','Hilang','Dijual');DEFAULT:'Baru'"`
+	Status            string `gorm:"type:ENUM('Baru', 'Baik', 'Rusak','Hilang','Perbaikan');DEFAULT:'Baru'"`
 	Jumlah            string
 	Nilai             float64
 	Keterangan        *string `gorm:"type:text"`
+	Path              *string `gorm:"type:text"`
 	Gambar            *string `gorm:"type:text"`
 	Created_At        time.Time
 	Updated_At        time.Time
