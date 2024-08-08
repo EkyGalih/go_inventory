@@ -7,6 +7,7 @@ import (
 	"inventaris/config"
 	"inventaris/entities"
 	"os"
+	"path/filepath"
 
 	"github.com/google/uuid"
 )
@@ -130,7 +131,7 @@ func Update(id string, aset_tik entities.AsetTik) bool {
 		panic(err)
 	}
 
-	return result > 0
+	return result > 0, nil
 }
 
 func Delete(id string) error {
@@ -145,7 +146,7 @@ func Delete(id string) error {
 	}
 	
 	if filePath != "" {
-		err = os.Remove(filePath)
+		err = os.Remove(filepath.Join("./", filePath))
 		if err != nil && !os.IsNotExist(err) {
 			return errors.New("failed to delete image " + err.Error())
 		}

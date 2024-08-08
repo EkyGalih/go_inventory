@@ -133,7 +133,7 @@
                     <div class="card card-flush pt-3 mb-5 pt-10">
                       <div class="card-body pt-0">
                         <form
-                          action="/aset_tik/edit"
+                          action="/aset-tik/edit"
                           method="POST"
                           enctype="multipart/form-data"
                         >
@@ -228,7 +228,7 @@
                                             </i> Upload Foto Aset
                                             </a>
                                     </label>
-                                    <input type="file" name="foto_berita" id="userImage" accept="image/*"
+                                    <input type="file" name="gambar" id="userImage" accept="image/*"
                                         onchange="loadFile(event)" value="{{ .aset_tik.Gambar }}">
                                 </p>
                                 <img class="images w-250px h250px" id="aset" src="{{ .aset_tik.Path }}">

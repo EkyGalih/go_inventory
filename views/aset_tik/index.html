@@ -269,7 +269,7 @@
                                         data-kt-countup-prefix="Rp. "
                                         data-kt-initialized="1"
                                       >
-                                        Rp. {{printf "%.0f" .Nilai}}
+                                        {{formatCurrency .Nilai}}
                                       </div>
                                     </div>
                                     <div class="fw-semibold fs-6 text-gray-500">
@@ -304,7 +304,7 @@
                                         data-kt-countup-prefix="RP. "
                                         data-kt-initialized="1"
                                       >
-                                        RP. 26,500,000
+                                        {{ formatCurrency (mul .Nilai .Jumlah) }}
                                       </div>
                                     </div>
                                     <div class="fw-semibold fs-6 text-gray-500">

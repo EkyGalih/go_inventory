@@ -15,7 +15,7 @@ type AsetTik struct {
 	Kategori_id       string  `gorm:"index"`
 	Tanggal_Perolehan time.Time
 	Status            string `gorm:"type:ENUM('Baru', 'Baik', 'Rusak','Hilang','Perbaikan');DEFAULT:'Baru'"`
-	Jumlah            string
+	Jumlah            float64
 	Nilai             float64
 	Keterangan        *string `gorm:"type:text"`
 	Path              *string `gorm:"type:text"`

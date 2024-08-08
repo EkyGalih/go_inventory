@@ -13,7 +13,10 @@ import (
 
 // RenderTemplate renders a template with the given name and data
 func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-    t := template.New("").Funcs(template.FuncMap{})
+    t := template.New("").Funcs(template.FuncMap{
+        "mul": mul,
+        "formatCurrency": FormatCurrency,
+    })
 
     // Parse the partial templates
     t, err := t.ParseGlob("views/partials/*.html")
@@ -73,4 +76,8 @@ func RandString(n int) string {
 		b[i] = letterBytes[rand.Intn(len(letterBytes))]
 	}
 	return string(b)
+}
+
+func mul(a, b float64) float64 {
+	return a * b
 }
