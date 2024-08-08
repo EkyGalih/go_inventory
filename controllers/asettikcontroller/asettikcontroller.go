@@ -1,6 +1,7 @@
 package asettikcontroller
 
 import (
+	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers"
 	"inventaris/models/asettikmodel"
@@ -129,50 +130,16 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var aset_tik entities.AsetTik
-
-		// check if a new file is uploaded
-		file, _, err := r.FormFile("gambar")
-		newFileUpload := err == nil
-		if newFileUpload {
-			defer file.Close()
-
-			// save the new file
-			path := "/public/uploads/aset/"
-			fileName := helpers.RandString(30) + ".jpg"
-			filePath := path + fileName
-
-			dest, err := os.Create(filePath)
-			if err != nil {
-				http.Error(w, "Unable to save file: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-			defer dest.Close()
-
-			_, err = io.Copy(dest, file)
-			if err != nil {
-				http.Error(w, "Unable to save file: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			// if there's an old file, delete it
-			oldFilePath := r.FormValue("old_file_path") // ganti nanti dengan path dari database
-			if oldFilePath != "" {
-				err := os.Remove(oldFilePath)
-				if err != nil && !os.IsNotExist(err) {
-					http.Error(w, "Failed to delete old file: "+err.Error(), http.StatusInternalServerError)
-					return
-				}
-			}
-
-			aset_tik.Path = &filePath
-			aset_tik.Gambar = &fileName
-		} else {
-			// no new file uploaded, use the existing path and gambar
-			filePath := r.FormValue("existing_file_path")
-			fileName := r.FormValue("existing_file_name")
-			aset_tik.Path = &filePath
-			aset_tik.Gambar = &fileName
+		oldFilePath, err := asettikmodel.Detail(idString)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
+		// check if a new file is uploaded
+		fmt.Println(r.FormValue("gambar"))
+		fmt.Println(oldFilePath)
+
+		
 
 		aset_tik.Kode_Aset = r.FormValue("kode_aset")
 		aset_tik.Nama_Aset = r.FormValue("nama_aset")
