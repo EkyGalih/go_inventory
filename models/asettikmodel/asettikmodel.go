@@ -37,7 +37,24 @@ func GetAll() []entities.AsetTik {
 func Create(aset_tik entities.AsetTik) (bool, error) {
 	newUUID := uuid.New()
 	result, err := config.DB.Exec(`
-	INSERT INTO aset_tik (id, kode_aset, nama_aset, merek, model, serial_number, deskripsi, kategori_id, tanggal_perolehan, status, nilai, jumlah, keterangan, path, gambar, created_at, updated_at)
+	INSERT INTO aset_tik (
+	id, 
+	kode_aset, 
+	nama_aset, 
+	merek, 
+	model, 
+	serial_number, 
+	deskripsi, 
+	kategori_id, 
+	tanggal_perolehan, 
+	status, 
+	nilai, 
+	jumlah, 
+	keterangan, 
+	path, 
+	gambar, 
+	created_at, 
+	updated_at)
 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		newUUID,
 		aset_tik.Kode_Aset,
@@ -84,7 +101,7 @@ func Detail(id string) (entities.AsetTik, error) {
 	return aset_tik, nil
 }
 
-func Update(id string, aset_tik entities.AsetTik) bool {
+func Update(id string, aset_tik entities.AsetTik) (bool, error) {
 	query, err := config.DB.Exec(`
 	UPDATE aset_tik 
 		SET 
@@ -120,15 +137,15 @@ func Update(id string, aset_tik entities.AsetTik) bool {
 		aset_tik.Path,
 		aset_tik.Gambar,
 		aset_tik.Updated_At,
-		aset_tik.Id,
+		id,
 	)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 
 	result, err := query.RowsAffected()
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 
 	return result > 0, nil
@@ -144,18 +161,18 @@ func Delete(id string) error {
 		}
 		return err
 	}
-	
+
 	if filePath != "" {
 		err = os.Remove(filepath.Join("./", filePath))
 		if err != nil && !os.IsNotExist(err) {
 			return errors.New("failed to delete image " + err.Error())
 		}
 	}
-	
+
 	_, err = config.DB.Exec("DELETE FROM aset_tik WHERE id = ?", id)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

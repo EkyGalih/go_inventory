@@ -171,7 +171,6 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			newFilePath := filepath.Join(path, fileName)
 			dbPath = strings.ReplaceAll(filepath.Join("/public/uploads/aset/", fileName), "\\", "/")
 
-
 			out, err := os.Create(newFilePath)
 
 			if err != nil {
@@ -188,17 +187,19 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			defer file.Close()
 		}
 
-		aset_tik.Kode_Aset = r.FormValue("kode_aset")
 		aset_tik.Nama_Aset = r.FormValue("nama_aset")
 		aset_tik.Merek = r.FormValue("merek")
 		aset_tik.Model = r.FormValue("model")
-		aset_tik.Serial_Number = r.FormValue("serial_number")
+		aset_tik.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
+		aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(r.FormValue("nilai"))
 		deskripsi := r.FormValue("deskripsi")
 		aset_tik.Deskripsi = &deskripsi
+		aset_tik.Path = &dbPath
+		aset_tik.Gambar = &fileName
+		aset_tik.Kode_Aset = r.FormValue("kode_aset")
 		aset_tik.Kategori_id = r.FormValue("kategori_id")
-		aset_tik.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
+		aset_tik.Serial_Number = r.FormValue("serial_number")
 		aset_tik.Status = r.FormValue("status")
-		aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(r.FormValue("nilai"))
 		aset_tik.Jumlah, err = strconv.ParseFloat(r.FormValue("jumlah"), 64)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -206,18 +207,20 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		}
 		keterangan := r.FormValue("keterangan")
 		aset_tik.Keterangan = &keterangan
-		aset_tik.Path = &dbPath
-			aset_tik.Gambar = &fileName
 		aset_tik.Created_At = time.Now()
 		aset_tik.Updated_At = time.Now()
 
-		if err := asettikmodel.Update(idString, aset_tik); err != nil {
-			http.Error(w, "Failed to update aset_tik: "+err.Error(), http.StatusInternalServerError)
+		success, err := asettikmodel.Update(idString, aset_tik)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	
-		http.Redirect(w, r, "/aset-tik", http.StatusSeeOther)
 
+		if success {
+			http.Redirect(w, r, "/aset-tik", http.StatusSeeOther)
+		} else {
+			http.Error(w, "Failed to update aset_tik", http.StatusInternalServerError)
+		}
 	}
 }
 
