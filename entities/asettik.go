@@ -6,6 +6,7 @@ import (
 
 type AsetTik struct {
 	Id                string `gorm:"primaryKey"`
+	Jenis_Aset         string `gorm:"type:ENUM('Tetap','Habis Pakai');DEFAULT:'Tetap'"`
 	Kode_Aset         string
 	Nama_Aset         string
 	Merek             string

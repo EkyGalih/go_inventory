@@ -3,7 +3,6 @@
   <head>
     <title>Inventory - {{ .Title }}</title>
     {{ template "_head.html" . }}
-    
   </head>
 
   <body
@@ -121,6 +120,19 @@
                     </ul>
                   </div>
 
+                  <div class="d-flex align-items-center gap-2 gap-lg-3">
+                    <a
+                      href="/categories"
+                      class="btn btn-sm fw-bold btn-secondary"
+                    >
+                      <i class="ki-duotone ki-arrow-left fs-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                      </i>
+                      Back
+                    </a>
+                  </div>
                 </div>
               </div>
 
@@ -132,12 +144,7 @@
                   <div class="row g-5 align-items-center mb-5">
                     <div class="card card-flush pt-3 mb-5 pt-10">
                       <div class="card-body pt-0">
-                        <form
-                          action="/aset-tik/edit"
-                          method="POST"
-                          enctype="multipart/form-data"
-                        >
-                        <input type="hidden" name="id" value="{{.aset_tik.Id}}">
+                        <form action="/aset/aset-tik/add" method="POST" enctype="multipart/form-data">
                           <div class="row">
                             <div class="col-lg-6">
                               <div class="mb-3">
@@ -149,7 +156,6 @@
                                   class="form-control"
                                   id="nama_aset"
                                   name="nama_aset"
-                                  value="{{.aset_tik.Nama_Aset}}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -161,7 +167,6 @@
                                   class="form-control"
                                   id="merek"
                                   name="merek"
-                                  value="{{.aset_tik.Merek}}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -173,7 +178,6 @@
                                   class="form-control"
                                   id="model"
                                   name="model"
-                                  value="{{ .aset_tik.Model }}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -187,7 +191,6 @@
                                   class="form-control"
                                   id="tanggal_perolehan"
                                   name="tanggal_perolehan"
-                                  value="{{ .aset_tik.Tanggal_Perolehan }}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -201,7 +204,6 @@
                                   name="nilai"
                                   onkeypress="isInputNumber(event)"
                                   oninput="formatRupiah(this)"
-                                  value="{{ printf "%.0f" .aset_tik.Nilai }}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -212,26 +214,26 @@
                                   name="deskripsi"
                                   class="form-control"
                                   id="deskripsi"
-                                >{{ .aset_tik.Deskripsi }}</textarea>
+                                ></textarea>
                               </div>
                               <div class="mb-3">
                                 <label for="gambar" class="form-label"
                                   >Gambar</label
                                 >
                                 <p class="image_upload">
-                                    <label for="userImage">
-                                        <a class="btn btn-primary btn-sm" rel="nofollow">
-                                            <i
-                                                class='ki-duotone ki-file-up fs-2 text-white'>
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i> Upload Foto Aset
-                                            </a>
-                                    </label>
-                                    <input type="file" name="gambar" id="userImage" accept="image/*"
-                                        onchange="loadFile(event)" value="{{ .aset_tik.Gambar }}">
-                                </p>
-                                <img class="images w-250px h250px" id="aset" src="{{ .aset_tik.Path }}">
+                                  <label for="userImage">
+                                      <a class="btn btn-primary btn-sm" rel="nofollow">
+                                          <i
+                                              class='ki-duotone ki-file-up fs-2 text-white'>
+                                              <span class="path1"></span>
+                                              <span class="path2"></span>
+                                          </i> Upload Foto Aset
+                                          </a>
+                                  </label>
+                                  <input type="file" name="gambar" id="userImage" accept="image/*"
+                                      onchange="loadFile(event)">
+                              </p>
+                              <img class="images w-250px h250px" id="aset">
                               </div>
                             </div>
                             <div class="col-lg-6">
@@ -244,7 +246,6 @@
                                   class="form-control"
                                   id="kode_aset"
                                   name="kode_aset"
-                                  value="{{ .aset_tik.Kode_Aset }}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -254,7 +255,7 @@
                                 <select name="kategori_id" class="form-control">
                                   <option value="">Pilih Kategori</option>
                                   {{ range .categories }}
-                                  <option value="{{ .Id }}" {{if eq .Id $.SelectedAset}}selected{{end}}>
+                                  <option value="{{ .Id }}">
                                     {{ .Nama_Kategori }}
                                   </option>
                                   {{ end }}
@@ -269,7 +270,6 @@
                                   class="form-control"
                                   id="serial_number"
                                   name="serial_number"
-                                  value="{{ .aset_tik.Serial_Number }}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -278,10 +278,10 @@
                                 >
                                 <select name="status" class="form-control">
                                   <option value="">Pilih Status</option>
-                                  <option value="Baru" {{if eq .aset_tik.Status "Baru"}}selected{{end}}>Baru</option>
-                                  <option value="Rusak" {{if eq .aset_tik.Status "Rusak"}}selected{{end}}>Rusak</option>
-                                  <option value="Hilang" {{if eq .aset_tik.Status "Hilang"}}selected{{end}}>Hilang</option>
-                                  <option value="Dijual" {{if eq .aset_tik.Status "Dijual"}}selected{{end}}>Dijual</option>
+                                  <option value="Baru">Baru</option>
+                                  <option value="Rusak">Rusak</option>
+                                  <option value="Hilang">Hilang</option>
+                                  <option value="Dijual">Dijual</option>
                                 </select>
                               </div>
                               <div class="mb-3">
@@ -293,7 +293,6 @@
                                   class="form-control"
                                   id="jumlah"
                                   name="jumlah"
-                                  value="{{ .aset_tik.Jumlah }}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -304,11 +303,11 @@
                                   name="keterangan"
                                   class="form-control"
                                   id="keterangan"
-                                >{{ .aset_tik.Keterangan }}</textarea>
+                                ></textarea>
                               </div>
                               <div class="d-flex justify-content-end mt-10">
                                 <a
-                                href="/aset-tik"
+                                href="/aset/aset-tik"
                                 class="btn btn-sm fw-bold btn-secondary me-3"
                                 >
                                 <i class="ki-duotone ki-arrow-left fs-2">
@@ -320,16 +319,11 @@
                                 </a>
                                 <button
                                   type="submit"
-                                  class="btn btn-success btn-sm"
+                                  class="btn btn-primary btn-sm"
                                 >
-                                  <i class="ki-duotone ki-send fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                  </i>
-                                  Save
+                                  <i class="ki-duotone ki-plus fs-2"></i>
+                                  Add
                                 </button>
-                              </div>    `
                             </div>
                           </div>
                         </form>

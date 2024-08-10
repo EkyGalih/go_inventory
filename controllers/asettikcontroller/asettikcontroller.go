@@ -16,22 +16,42 @@ import (
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	aset_tiks := asettikmodel.GetAll()
-	data := map[string]any{
-		"Title":     "Aset TIK",
-		"aset_tiks": aset_tiks,
+	distribusi := helpers.GetDistribusi(aset_tiks)
+	if distribusi == nil {
+		distribusi = make(map[string]int)
 	}
 
-	helpers.RenderTemplate(w, "aset_tik/index.html", data)
+	// untuk show menu dan active sub menu
+	path := map[string]string{
+		"menu":    "aset",
+		"subMenu": "aset-tik",
+	}
+
+	data := map[string]any{
+		"Title":      "Aset TIK",
+		"path":       path,
+		"aset_tiks":  aset_tiks,
+		"distribusi": distribusi,
+	}
+
+	helpers.RenderTemplate(w, "/aset/aset_tik/index.html", data)
 }
 
 func Add(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		categories := categorymodel.GetAll()
+		// untuk show menu dan active sub menu
+		path := map[string]string{
+			"menu":    "aset",
+			"subMenu": "aset-tik",
+		}
+
 		data := map[string]any{
 			"Title":      "Add Aset TIK",
+			"path":       path,
 			"categories": categories,
 		}
-		helpers.RenderTemplate(w, "aset_tik/create.html", data)
+		helpers.RenderTemplate(w, "/aset/aset_tik/create.html", data)
 	}
 
 	if r.Method == http.MethodPost {
@@ -52,10 +72,10 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		defer file.Close()
 
 		// save the file
-		path := "./public/uploads/aset/"
+		path := "./public/uploads/aset/tetap/"
 		fileName := helpers.RandString(30) + ".jpg"
 		filePath := filepath.Join(path, fileName)
-		dbPath := strings.ReplaceAll(filepath.Join("/public/uploads/aset/", fileName), "\\", "/")
+		dbPath := strings.ReplaceAll(filepath.Join("/public/uploads/aset/tetap/", fileName), "\\", "/")
 
 		dest, err := os.Create(filePath)
 		if err != nil {
@@ -99,7 +119,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if success {
-			http.Redirect(w, r, "/aset-tik", http.StatusSeeOther)
+			http.Redirect(w, r, "/aset/aset-tik", http.StatusSeeOther)
 		} else {
 			http.Error(w, "Failed to create aset_tik", http.StatusInternalServerError)
 		}
@@ -119,14 +139,22 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
+
+		// untuk show menu dan active sub menu
+		path := map[string]string{
+			"menu":    "aset",
+			"subMenu": "aset-tik",
+		}
+
 		data := map[string]interface{}{
 			"Title":        "Edit Aset TIK",
+			"path":         path,
 			"aset_tik":     aset_tik,
 			"categories":   categories,
 			"SelectedAset": aset_tik.Kategori_id, // untuk selected kategori aset
 		}
 
-		helpers.RenderTemplate(w, "aset_tik/edit.html", data)
+		helpers.RenderTemplate(w, "aset/aset_tik/edit.html", data)
 	}
 
 	if r.Method == http.MethodPost {
@@ -141,7 +169,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		oldFilePath := *aset.Path
+		oldFilePath := filepath.Join(".", *aset.Path)
 		var aset_tik entities.AsetTik
 		var dbPath, fileName string
 
@@ -151,6 +179,8 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			if err == http.ErrMissingFile {
 				// Tidak ada file baru, lanjutkan tanpa mengubah file lama
 				file = nil
+				dbPath = *aset.Path
+				fileName = *aset.Gambar
 			} else {
 				http.Error(w, "Error retrieving file", http.StatusInternalServerError)
 				return
@@ -166,10 +196,10 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Simpan file baru
-			path := "./public/uploads/aset/"
+			path := "./public/uploads/aset/tetap/"
 			fileName = helpers.RandString(30) + ".jpg"
 			newFilePath := filepath.Join(path, fileName)
-			dbPath = strings.ReplaceAll(filepath.Join("/public/uploads/aset/", fileName), "\\", "/")
+			dbPath = strings.ReplaceAll(filepath.Join("/public/uploads/aset/tetap/", fileName), "\\", "/")
 
 			out, err := os.Create(newFilePath)
 
@@ -217,7 +247,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if success {
-			http.Redirect(w, r, "/aset-tik", http.StatusSeeOther)
+			http.Redirect(w, r, "/aset/aset-tik", http.StatusSeeOther)
 		} else {
 			http.Error(w, "Failed to update aset_tik", http.StatusInternalServerError)
 		}
@@ -237,5 +267,5 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/aset-tik", http.StatusSeeOther)
+	http.Redirect(w, r, "/aset/aset-tik", http.StatusSeeOther)
 }

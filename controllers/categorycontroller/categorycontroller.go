@@ -10,8 +10,13 @@ import (
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	categories := categorymodel.GetAll()
+	path := map[string]string{
+		"menu": "category",
+	}
+
 	data := map[string]any{
 		"Title":      "Category",
+		"path":       path,
 		"categories": categories,
 	}
 
@@ -20,8 +25,13 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func Add(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
+		path := map[string]string{
+			"menu": "category",
+		}
+
 		data := map[string]any{
 			"Title": "Add Category",
+			"path":  path,
 		}
 		helpers.RenderTemplate(w, "category/create.html", data)
 	}
@@ -60,8 +70,14 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		path := map[string]string{
+			"menu": "category",
+		}
+
 		data := map[string]interface{}{
 			"Title":    "Edit Category",
+			"path":     path,
 			"category": category,
 		}
 

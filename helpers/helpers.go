@@ -3,12 +3,16 @@ package helpers
 
 import (
 	"html/template"
+	"inventaris/config"
+	"inventaris/entities"
+	"math"
 	"math/rand"
 	"net/http"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // RenderTemplate renders a template with the given name and data
@@ -16,6 +20,8 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
     t := template.New("").Funcs(template.FuncMap{
         "mul": mul,
         "formatCurrency": FormatCurrency,
+        "formatDate": formatDate,
+        "floatToInt": ConvertFloatToInt,
     })
 
     // Parse the partial templates
@@ -80,4 +86,26 @@ func RandString(n int) string {
 
 func mul(a, b float64) float64 {
 	return a * b
+}
+
+func ConvertFloatToInt(f float64) int {
+    return int(math.Round(f))
+}
+
+func formatDate(t time.Time) string {
+    return t.Format("2006-01-02")
+}
+
+func GetDistribusi(aset_tiks []entities.AsetTik) map[string]int {
+    distribusi := make(map[string]int)
+    for _, aset := range aset_tiks {
+        var count int
+        err := config.DB.QueryRow("SELECT COUNT(*) FROM lokasi_aset WHERE aset_id = ?", aset.Id).Scan(&count)
+        if err != nil {
+            // Handle error, misalnya dengan logging
+            continue
+        }
+        distribusi[aset.Id] = count
+    }
+    return distribusi
 }

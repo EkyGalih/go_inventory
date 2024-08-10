@@ -110,7 +110,7 @@
 
                   <div class="d-flex align-items-center gap-2 gap-lg-3">
                     <a
-                      href="/aset-tik/add"
+                      href="/aset/aset-tik/add"
                       class="btn btn-sm fw-bold btn-primary"
                     >
                       <i class="ki-duotone ki-plus fs-2"></i> Add Aset
@@ -207,11 +207,17 @@
                               </div>
                               <div class="d-flex my-4">
                                 <div class="me-0">
-                                  <a
-                                    href="http://bpkad.test/admin/inventaris/lokasi-aset/tambah-lokasi/aeaaadc0-dbcd-4b6f-94a1-bcd2e7652bc4"
-                                    class="btn btn-sm btn-primary me-3"
-                                    >Distribusi</a
-                                  >
+                                  {{ if $.distribusi }}
+                                    {{ $dist := index $.distribusi .Id }}
+                                    {{ $jumlah := .Jumlah | floatToInt }}
+                                    {{ if eq $dist $jumlah }}
+                                        <button class="btn btn-sm btn-primary me-3" disabled>Distribusi</button>
+                                    {{ else }}
+                                        <a href="/aset/aset-tik/distribusi?id={{ .Id }}" class="btn btn-sm btn-primary me-3">Distribusi</a>
+                                    {{ end }}
+                                  {{ else }}
+                                      <a href="/aset/aset-tik/distribusi?id={{ .Id }}" class="btn btn-sm btn-primary me-3">Distribusi</a>
+                                  {{ end }}
                                   <button
                                     class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                                     data-kt-menu-trigger="click"
@@ -227,7 +233,7 @@
                                   >
                                     <div class="menu-item px-3">
                                       <a
-                                        href="/aset-tik/edit?id={{ .Id }}"
+                                        href="/aset/aset-tik/edit?id={{ .Id }}"
                                         class="menu-link px-3"
                                       >
                                       <i class="ki-duotone ki-pencil fs-2 mr-15">
@@ -239,7 +245,7 @@
                                         Edit
                                       </a>
                                       <a onclick="return confirm('Are you sure?')"
-                                        href="/aset-tik/delete?id={{ .Id }}"
+                                        href="/aset/aset-tik/delete?id={{ .Id }}"
                                         class="menu-link px-3"
                                       >
                                       <i class="ki-duotone ki-trash fs-2 mr-5">
@@ -322,7 +328,14 @@
                                   <span class="fw-semibold fs-6 text-gray-500"
                                     >Distribusi Aset</span
                                   >
-                                  <span class="fw-bold fs-6">0/1 Unit</span>
+                                  <span class="fw-bold fs-6">
+                                    {{ if $.distribusi }}
+                                      {{ $dist := index $.distribusi .Id }}
+                                      {{ if $dist }}{{ $dist }}{{ else }}0{{ end }}/{{ .Jumlah }} Unit
+                                    {{ else }}
+                                      0/{{ .Jumlah }} Unit
+                                    {{ end }}
+                                  </span>
                                 </div>
                               </div>
                             </div>
