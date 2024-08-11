@@ -244,8 +244,10 @@
                                       </i>
                                         Edit
                                       </a>
-                                      <a onclick="return confirm('Are you sure?')"
-                                        href="/aset/aset-tik/delete?id={{ .Id }}"
+                                      <a
+                                        href="#"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#HapusAset{{.Id}}"
                                         class="menu-link px-3"
                                       >
                                       <i class="ki-duotone ki-trash fs-2 mr-5">
@@ -333,7 +335,7 @@
                                       {{ $dist := index $.distribusi .Id }}
                                       {{ if $dist }}{{ $dist }}{{ else }}0{{ end }}/{{ .Jumlah }} Unit
                                     {{ else }}
-                                      0/{{ .Jumlah }} Unit
+                                      0/{{ .Jumlah }} {{.Satuan}}
                                     {{ end }}
                                   </span>
                                 </div>
@@ -354,6 +356,46 @@
                         </ul>
                       </div>
                     </div>
+                    <!-- Hapus:: Begin Modal -->
+                    <div class="modal fade" id="HapusAset{{.Id}}" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered mw-650px">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h2 class="modal-title">
+                              Hapus Aset
+                            </h2>
+                            <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                              <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                              </i>
+                            </div>
+                          </div>
+                          <div class="modal-body">
+                            <p class="p-3">Apakah anda yakin ingin menghapus aset <strong><i>{{.Nama_Aset}}</i></strong>, dengan kode aset <strong><i>{{.Kode_Aset}}</i></strong>?</p>
+                          </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                                <i class="ki-duotone ki-cross fs-5">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                  <span class="path3"></span>
+                                  <span class="path4"></span>
+                                </i> Tidak
+                              </button>
+                              <a href="/aset/aset-tik/delete?id={{.Id}}" class="btn btn-success">
+                                <i class="ki-duotone ki-check fs-5">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                  <span class="path3"></span>
+                                  <span class="path4"></span>
+                                </i> Ya
+                              </a>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Hapus:: End Modal -->
                     {{ end }}
                   </div>
                   </div>

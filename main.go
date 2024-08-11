@@ -5,6 +5,7 @@ import (
 	"inventaris/controllers/asettikcontroller"
 	"inventaris/controllers/categorycontroller"
 	"inventaris/controllers/homecontroller"
+	"inventaris/controllers/tipeasetcontroller"
 	"log"
 	"net/http"
 )
@@ -20,16 +21,22 @@ func main() {
 	http.HandleFunc("/", homecontroller.Welcome)
 
 	// 2. categories
-	http.HandleFunc("/categories", categorycontroller.Index)
-	http.HandleFunc("/categories/add", categorycontroller.Add)
-	http.HandleFunc("/categories/edit", categorycontroller.Edit)
-	http.HandleFunc("/categories/delete", categorycontroller.Delete)
+	http.HandleFunc("/addons/kategori", categorycontroller.Index)
+	http.HandleFunc("/addons/kategori/add", categorycontroller.Add)
+	http.HandleFunc("/addons/kategori/edit", categorycontroller.Edit)
+	http.HandleFunc("/addons/kategori/delete", categorycontroller.Delete)
 
 	// 3. aset tik
 	http.HandleFunc("/aset/aset-tik", asettikcontroller.Index)
 	http.HandleFunc("/aset/aset-tik/add", asettikcontroller.Add)
 	http.HandleFunc("/aset/aset-tik/edit", asettikcontroller.Edit)
 	http.HandleFunc("/aset/aset-tik/delete", asettikcontroller.Delete)
+
+	// 4 tipe aset
+	http.HandleFunc("/addons/tipe", tipeasetcontroller.Index)
+	http.HandleFunc("/addons/tipe/add", tipeasetcontroller.Add)
+	http.HandleFunc("/addons/tipe/update", tipeasetcontroller.Update)
+	http.HandleFunc("/addons/tipe/delete", tipeasetcontroller.Delete)
 
 	log.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)

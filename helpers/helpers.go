@@ -15,13 +15,17 @@ import (
 	"time"
 )
 
-// RenderTemplate renders a template with the given name and data
+// RenderTemplate renders a Go template with the given data and writes the result to the HTTP response writer.
+//
+// The tmpl parameter specifies the path to the template file, and the data parameter is the data to be passed to the template.
+// The function returns no value, but writes the rendered template to the HTTP response writer.
 func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
     t := template.New("").Funcs(template.FuncMap{
         "mul": mul,
         "formatCurrency": FormatCurrency,
         "formatDate": formatDate,
         "floatToInt": ConvertFloatToInt,
+        "removeHTMLTags": removeHTMLTags,
     })
 
     // Parse the partial templates
@@ -45,6 +49,10 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
     }
 }
 
+// ParseCurrencyToFloat mengonversi string mata uang menjadi float64.
+//
+// Parameter value adalah string yang mewakili mata uang.
+// Fungsi ini mengembalikan nilai float64 yang sudah dikonversi dan error jika terjadi kesalahan.
 func ParseCurrencyToFloat(value string) (float64, error) {
     // Menggunakan ekspresi reguler untuk menghapus karakter non-numerik
     re := regexp.MustCompile(`[^\d]`)
@@ -58,6 +66,13 @@ func ParseCurrencyToFloat(value string) (float64, error) {
     return number, nil
 }
 
+// FormatCurrency formats a float64 value as a currency string with periods as thousands separators.
+//
+// Parameters:
+// - value: the float64 value to be formatted.
+//
+// Returns:
+// - string: the formatted currency string.
 func FormatCurrency(value float64) string {
 	// Convert the number to a string with no decimal places
 	valueStr := strconv.FormatFloat(value, 'f', 0, 64)
@@ -76,6 +91,10 @@ func FormatCurrency(value float64) string {
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 
+// RandString generates a random string of a specified length.
+//
+// Parameter n is the length of the string to be generated.
+// Returns a string of random characters.
 func RandString(n int) string {
 	b := make([]byte, n)
 	for i := range b {
@@ -84,18 +103,37 @@ func RandString(n int) string {
 	return string(b)
 }
 
+// mul returns the product of two float64 numbers.
+//
+// Parameters:
+//  a (float64): the first number to be multiplied.
+//  b (float64): the second number to be multiplied.
+// Returns:
+//  float64: the product of a and b.
 func mul(a, b float64) float64 {
 	return a * b
 }
 
+// ConvertFloatToInt converts a float64 number to an integer.
+//
+// Parameter f is the float64 number to be converted.
+// Returns an integer representation of the input float64 number.
 func ConvertFloatToInt(f float64) int {
     return int(math.Round(f))
 }
 
+// formatDate formats a given time.Time object into a string.
+//
+// Parameter t is the time.Time object to be formatted.
+// Returns a string representing the formatted date in the format "YYYY-MM-DD".
 func formatDate(t time.Time) string {
     return t.Format("2006-01-02")
 }
 
+// GetDistribusi generates a map of asset distribution based on the provided asset list.
+//
+// Parameter aset_tiks is a list of AsetTik entities.
+// Returns a map of asset IDs to their respective distribution counts.
 func GetDistribusi(aset_tiks []entities.AsetTik) map[string]int {
     distribusi := make(map[string]int)
     for _, aset := range aset_tiks {
@@ -108,4 +146,13 @@ func GetDistribusi(aset_tiks []entities.AsetTik) map[string]int {
         distribusi[aset.Id] = count
     }
     return distribusi
+}
+
+// removeHTMLTags removes HTML tags from a given input string.
+//
+// Parameter input is the string from which HTML tags will be removed.
+// Returns the input string with all HTML tags removed.
+func removeHTMLTags(input string) string {
+	re := regexp.MustCompile("<.*?>")
+	return re.ReplaceAllString(input, "")
 }

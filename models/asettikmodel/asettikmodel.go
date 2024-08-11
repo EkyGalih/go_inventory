@@ -24,7 +24,7 @@ func GetAll() []entities.AsetTik {
 
 	for rows.Next() {
 		var aset_tik entities.AsetTik
-		if err := rows.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
+		if err := rows.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tipe_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Umur_Aset, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Satuan, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
 			panic(err)
 		}
 
@@ -53,10 +53,11 @@ func Create(aset_tik entities.AsetTik) (bool, error) {
 	jumlah, 
 	keterangan, 
 	path, 
-	gambar, 
+	gambar,
+	satuan,
 	created_at, 
 	updated_at)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		newUUID,
 		aset_tik.Jenis_Aset,
 		aset_tik.Kode_Aset,
@@ -73,6 +74,7 @@ func Create(aset_tik entities.AsetTik) (bool, error) {
 		aset_tik.Keterangan,
 		aset_tik.Path,
 		aset_tik.Gambar,
+		aset_tik.Satuan,
 		aset_tik.Created_At,
 		aset_tik.Updated_At,
 	)
@@ -93,7 +95,7 @@ func Detail(id string) (entities.AsetTik, error) {
 	row := config.DB.QueryRow(`Select * from aset_tik WHERE jenis_aset = 'Tetap' AND id = ?`, id)
 
 	var aset_tik entities.AsetTik
-	if err := row.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
+	if err := row.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Satuan, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
 		if err == sql.ErrNoRows {
 			return aset_tik, fmt.Errorf("no category found with id %s", id)
 		}
@@ -121,7 +123,8 @@ func Update(id string, aset_tik entities.AsetTik) (bool, error) {
 			jumlah = ?, 
 			keterangan = ?, 
 			path = ?, 
-			gambar = ?, 
+			gambar = ?,
+			satuan = ?,
 			updated_at = ? 
 		WHERE id = ?
 	`,
@@ -140,6 +143,7 @@ func Update(id string, aset_tik entities.AsetTik) (bool, error) {
 		aset_tik.Keterangan,
 		aset_tik.Path,
 		aset_tik.Gambar,
+		aset_tik.Satuan,
 		aset_tik.Updated_At,
 		id,
 	)
