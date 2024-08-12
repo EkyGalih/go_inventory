@@ -159,6 +159,17 @@
                                 />
                               </div>
                               <div class="mb-3">
+                                <label for="kode_aset" class="form-label"
+                                  >Kode Aset</label
+                                >
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="kode_aset"
+                                  name="kode_aset"
+                                />
+                              </div>
+                              <div class="mb-3">
                                 <label for="merek" class="form-label"
                                   >Merek</label
                                 >
@@ -238,17 +249,6 @@
                             </div>
                             <div class="col-lg-6">
                               <div class="mb-3">
-                                <label for="kode_aset" class="form-label"
-                                  >Kode Aset</label
-                                >
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="kode_aset"
-                                  name="kode_aset"
-                                />
-                              </div>
-                              <div class="mb-3">
                                 <label for="Kategori" class="form-label"
                                   >Kategori</label
                                 >
@@ -260,6 +260,23 @@
                                   </option>
                                   {{ end }}
                                 </select>
+                              </div>
+                              <div class="mb-3">
+                                <label for="kode_aset" class="form-label"
+                                  >Tipe Aset</label
+                                >
+                                <select name="tipe_id" class="form-control">
+                                  <option value="">Pilih Tipe</option>
+                                  {{range .tipes}}
+                                  <option value="{{.Id}}">{{.Nama_Tipe}}</option>
+                                  {{end}}
+                                </select>
+                              </div>
+                              <div class="mb-3">
+                                <label for="kode_aset" class="form-label"
+                                  >Jenis Aset</label
+                                >
+                                <input type="text" class="form-control" name="jenis_aset" value="Tetap" readonly>
                               </div>
                               <div class="mb-3">
                                 <label for="serial_number" class="form-label"

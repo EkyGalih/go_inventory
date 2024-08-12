@@ -2,6 +2,7 @@
 package helpers
 
 import (
+	"fmt"
 	"html/template"
 	"inventaris/config"
 	"inventaris/entities"
@@ -26,6 +27,11 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
         "formatDate": formatDate,
         "floatToInt": ConvertFloatToInt,
         "removeHTMLTags": removeHTMLTags,
+        "calculateAssetAge": calculateAssetAge,
+        "add": add,
+        "sub": sub,
+        "until": until,
+        "toInt": toInt,
     })
 
     // Parse the partial templates
@@ -156,3 +162,54 @@ func removeHTMLTags(input string) string {
 	re := regexp.MustCompile("<.*?>")
 	return re.ReplaceAllString(input, "")
 }
+
+func calculateAssetAge(tanggalPerolehan time.Time) string {
+	today := time.Now()
+
+	// Menghitung perbedaan tahun
+	years := today.Year() - tanggalPerolehan.Year()
+
+	// Menghitung perbedaan bulan
+	months := int(today.Month()) - int(tanggalPerolehan.Month())
+	if months < 0 {
+		years--
+		months += 12
+	}
+
+	// Membuat string hasilnya
+	return fmt.Sprintf("%d tahun %d bulan", years, months)
+}
+
+
+// pagintation
+func add(a, b int) int {
+    return a+b
+}
+
+func sub(a, b int) int {
+    return a-b
+}
+
+func until(count int) []int {
+    var i int
+    var items []int
+    for i = 0; i < count; i++ {
+        items = append(items, i)
+    }
+    return items
+}
+
+func toInt(val interface{}) int {
+    switch v := val.(type) {
+    case int:
+        return v
+    case string:
+        if i, err := strconv.Atoi(v); err == nil {
+            return i
+        }
+    }
+
+    return 0
+}
+
+// end pagination

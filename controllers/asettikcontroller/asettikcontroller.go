@@ -5,7 +5,9 @@ import (
 	"inventaris/helpers"
 	"inventaris/models/asettikmodel"
 	"inventaris/models/categorymodel"
+	"inventaris/models/tipemodel"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -15,7 +17,33 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	aset_tiks := asettikmodel.GetAll()
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		limit = 5
+	}
+
+	aset_tiks, err := asettikmodel.GetAll(page, limit)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalRows, err := asettikmodel.GetTotalRows()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
+
 	distribusi := helpers.GetDistribusi(aset_tiks)
 	if distribusi == nil {
 		distribusi = make(map[string]int)
@@ -30,6 +58,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"Title":      "Aset TIK",
 		"path":       path,
+		"Page":       page,
+		"TotalPages":  totalPages,
+		"TotalRows":  totalRows,
+		"Limit":      limit,
 		"aset_tiks":  aset_tiks,
 		"distribusi": distribusi,
 	}
@@ -40,6 +72,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 func Add(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		categories := categorymodel.GetAll()
+		tipes := tipemodel.GetAll()
+
 		// untuk show menu dan active sub menu
 		path := map[string]string{
 			"menu":    "aset",
@@ -50,6 +84,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 			"Title":      "Add Aset TIK",
 			"path":       path,
 			"categories": categories,
+			"tipes":      tipes,
 		}
 		helpers.RenderTemplate(w, "/aset/aset_tik/create.html", data)
 	}
@@ -89,6 +124,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		aset_tik.Jenis_Aset = r.FormValue("jenis_aset")
 		aset_tik.Kode_Aset = r.FormValue("kode_aset")
 		aset_tik.Nama_Aset = r.FormValue("nama_aset")
 		aset_tik.Merek = r.FormValue("merek")
@@ -97,6 +133,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 		deskripsi := r.FormValue("deskripsi")
 		aset_tik.Deskripsi = &deskripsi
 		aset_tik.Kategori_id = r.FormValue("kategori_id")
+		aset_tik.Tipe_id = r.FormValue("tipe_id")
 		aset_tik.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
 		aset_tik.Status = r.FormValue("status")
 		aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(r.FormValue("nilai"))
@@ -135,7 +172,9 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		}
 
 		categories := categorymodel.GetAll()
+		tipes := tipemodel.GetAll()
 		aset_tik, err := asettikmodel.Detail(idString)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
@@ -151,6 +190,8 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			"path":         path,
 			"aset_tik":     aset_tik,
 			"categories":   categories,
+			"tipes":        tipes,
+			"SelectedTipe": aset_tik.Tipe_id,
 			"SelectedAset": aset_tik.Kategori_id, // untuk selected kategori aset
 		}
 
@@ -218,6 +259,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		}
 
 		aset_tik.Nama_Aset = r.FormValue("nama_aset")
+		aset_tik.Jenis_Aset = r.FormValue("jenis_aset")
 		aset_tik.Merek = r.FormValue("merek")
 		aset_tik.Model = r.FormValue("model")
 		aset_tik.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
@@ -228,6 +270,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		aset_tik.Gambar = &fileName
 		aset_tik.Kode_Aset = r.FormValue("kode_aset")
 		aset_tik.Kategori_id = r.FormValue("kategori_id")
+		aset_tik.Tipe_id = r.FormValue("tipe_id")
 		aset_tik.Serial_Number = r.FormValue("serial_number")
 		aset_tik.Status = r.FormValue("status")
 		aset_tik.Jumlah, err = strconv.ParseFloat(r.FormValue("jumlah"), 64)

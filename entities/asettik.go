@@ -13,11 +13,10 @@ type AsetTik struct {
 	Merek             string
 	Model             string
 	Serial_Number     string
-	Deskripsi         *string        `gorm:"type:text"`
-	Kategori_id       string         `gorm:"index"`
-	Tipe_id           sql.NullString `gorm:"index"`
+	Deskripsi         *string `gorm:"type:text"`
+	Kategori_id       string  `gorm:"index"`
+	Tipe_id           string  `gorm:"index"`
 	Tanggal_Perolehan time.Time
-	Umur_Aset         sql.NullString
 	Status            string `gorm:"type:ENUM('Baru', 'Baik', 'Rusak','Hilang','Perbaikan');DEFAULT:'Baru'"`
 	Jumlah            float64
 	Nilai             float64
