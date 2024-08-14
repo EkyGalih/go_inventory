@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -23,7 +22,7 @@ type AsetTik struct {
 	Keterangan        *string `gorm:"type:text"`
 	Path              *string `gorm:"type:text"`
 	Gambar            *string `gorm:"type:text"`
-	Satuan            sql.NullString
+	Satuan            *string `gorm:"type:text"`
 	Created_At        time.Time
 	Updated_At        time.Time
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"inventaris/config"
+	"inventaris/controllers/asethabispakaicontroller"
 	"inventaris/controllers/asettikcontroller"
 	"inventaris/controllers/categorycontroller"
 	"inventaris/controllers/homecontroller"
@@ -31,6 +32,11 @@ func main() {
 	http.HandleFunc("/aset/aset-tik/add", asettikcontroller.Add)
 	http.HandleFunc("/aset/aset-tik/edit", asettikcontroller.Edit)
 	http.HandleFunc("/aset/aset-tik/delete", asettikcontroller.Delete)
+
+	http.HandleFunc("/aset/habis-pakai", asethabispakaicontroller.Index)
+	http.HandleFunc("/aset/habis-pakai/add", asethabispakaicontroller.Add)
+	http.HandleFunc("/aset/habis-pakai/edit", asethabispakaicontroller.Edit)
+	http.HandleFunc("/aset/habis-pakai/delete", asethabispakaicontroller.Delete)
 
 	// 4 tipe aset
 	http.HandleFunc("/addons/tipe", tipeasetcontroller.Index)
