@@ -27,14 +27,16 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 {
-		limit = 5
+		limit = 10
 	}
 
-	aset_tiks, err := asettikmodel.GetAll(page, limit)
+	aset_tiks, err := asettikmodel.GetPaginate(page, limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	aset_tik := asettikmodel.GetAll()
 
 	totalRows, err := asettikmodel.GetTotalRows()
 	if err != nil {
@@ -44,7 +46,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
 
-	distribusi := helpers.GetDistribusi(aset_tiks)
+	distribusi := helpers.GetDistribusi(aset_tik)
 	if distribusi == nil {
 		distribusi = make(map[string]int)
 	}
@@ -142,6 +144,8 @@ func Add(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		satuan := r.FormValue("satuan")
+		aset_tik.Satuan = &satuan
 		keterangan := r.FormValue("keterangan")
 		aset_tik.Keterangan = &keterangan
 		aset_tik.Path = &dbPath
@@ -278,6 +282,8 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		satuan := r.FormValue("satuan")
+		aset_tik.Satuan = &satuan
 		keterangan := r.FormValue("keterangan")
 		aset_tik.Keterangan = &keterangan
 		aset_tik.Created_At = time.Now()

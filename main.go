@@ -6,6 +6,7 @@ import (
 	"inventaris/controllers/asettikcontroller"
 	"inventaris/controllers/categorycontroller"
 	"inventaris/controllers/homecontroller"
+	"inventaris/controllers/pemeliharaanaset"
 	"inventaris/controllers/tipeasetcontroller"
 	"log"
 	"net/http"
@@ -43,6 +44,11 @@ func main() {
 	http.HandleFunc("/addons/tipe/add", tipeasetcontroller.Add)
 	http.HandleFunc("/addons/tipe/update", tipeasetcontroller.Update)
 	http.HandleFunc("/addons/tipe/delete", tipeasetcontroller.Delete)
+
+	// 5. Pemeliharaan
+	http.HandleFunc("/pemeliharaan", pemeliharaanasetcontroller.Index)
+	http.HandleFunc("/pemeliharaan/add", pemeliharaanasetcontroller.Add)
+	http.HandleFunc("/pemeliharaan/path", pemeliharaanasetcontroller.GetGambar)
 
 	log.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)

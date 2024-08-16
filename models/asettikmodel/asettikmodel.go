@@ -12,7 +12,29 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetAll(page, limit int) ([]entities.AsetTik, error) {
+func GetAll() []entities.AsetTik {
+	rows, err := config.DB.Query(`SELECT * FROM aset_tik WHERE jenis_aset = 'Tetap' ORDER BY updated_at DESC`)
+	if err != nil {
+		panic(err)
+	}
+
+	defer rows.Close()
+
+	var aset_tiks []entities.AsetTik
+
+	for rows.Next() {
+		var aset_tik entities.AsetTik
+		if err := rows.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tipe_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Satuan, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
+			panic(err)
+		}
+
+		aset_tiks = append(aset_tiks, aset_tik)
+	}
+
+	return aset_tiks
+}
+
+func GetPaginate(page, limit int) ([]entities.AsetTik, error) {
 	offset := (page - 1) * limit
 	query := `SELECT * FROM aset_tik WHERE jenis_aset = 'Tetap' ORDER BY updated_at DESC LIMIT ? OFFSET ?`
 

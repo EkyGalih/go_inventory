@@ -130,7 +130,7 @@
                         <div class="col-md-6 col-xxl-4">
                           <div class="card">
                             <div class="card-body p-0 position-relative">
-                              <img src="{{.Path}}" alt="image" class="card-img" style="width: 100%; height: 100%; object-fit: cover;" />
+                              <img src="{{.Path}}" alt="image" class="card-img" style="width: 100%; height: 400px; object-fit: cover;" />
                               <!-- Background Overlay -->
                               <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.4);"></div>
                               <div class="overlay-content position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-end p-5">
@@ -140,7 +140,7 @@
                                   </button>
                                   <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
                                     <div class="menu-item">
-                                      <a class="menu-link" href="#">
+                                      <a class="menu-link" href="#" data-bs-toggle="modal" data-bs-target="#DetailAset{{.Id}}">
                                         <i class="ki-duotone ki-eye fs-2">
                                           <span class="path1"></span>
                                           <span class="path2"></span>
@@ -191,6 +191,73 @@
                             </div>
                           </div>
                         </div>
+                        <!-- Detail:: Begin Modal -->
+                      <div
+                      class="modal fade"
+                      id="DetailAset{{.Id}}"
+                      tabindex="-1"
+                      aria-hidden="true"
+                    >
+                      <div
+                        class="modal-dialog modal-dialog-centered mw-650px"
+                      >
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h2 class="modal-title">Detail Aset</h2>
+                            <div
+                              class="btn btn-sm btn-icon btn-active-color-primary"
+                              data-bs-dismiss="modal"
+                            >
+                              <i class="ki-duotone ki-cross fs-1">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                              </i>
+                            </div>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row">
+                              <div class="col-lg-6">
+                                <div class="pb-5 fs-6">
+                                  <div class="fw-bold mt-5">{{.Nama_Aset}} ({{.Serial_Number}})</div>
+                                  <div class="text-gray-600">{{.Kode_Aset}}</div>
+                                  <div class="fw-bold mt-5">{{.Merek}}</div>
+                                  <div class="text-gray-600">{{.Model}}</div>
+                                  <div class="fw-bold mt-5">Stok</div>
+                                  <div class="text-gray-600">{{.Jumlah}} {{.Satuan}}</div>
+                                  <div class="fw-bold mt-5">Terpakai</div>
+                                  <div class="text-gray-600">
+                                    {{ if $.distribusi }} {{ $dist := index
+                                      $.distribusi .Id }} {{ if $dist }}{{ $dist
+                                      }}{{ else }}0{{ end }}/{{ .Jumlah }} {{.Satuan}}
+                                      {{ else }} 0/{{ .Jumlah }} {{.Satuan}} {{
+                                      end }}
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-lg-6">
+                                <img src="{{.Path}}" alt="{{.Nama_Aset}}" style="width: 100%; height: 250px;">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              data-bs-dismiss="modal"
+                            >
+                              <i class="ki-duotone ki-cross fs-5">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                              </i>
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Detail:: End Modal -->
                       <!-- Hapus:: Begin Modal -->
                       <div
                         class="modal fade"

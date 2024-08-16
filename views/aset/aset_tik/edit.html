@@ -301,17 +301,35 @@
                                   <option value="Dijual" {{if eq .aset_tik.Status "Dijual"}}selected{{end}}>Dijual</option>
                                 </select>
                               </div>
-                              <div class="mb-3">
-                                <label for="jumlah" class="form-label"
-                                  >Jumlah Aset</label
-                                >
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  id="jumlah"
-                                  name="jumlah"
-                                  value="{{ .aset_tik.Jumlah }}"
-                                />
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <div class="mb-3">
+                                    <label for="jumlah" class="form-label"
+                                      >Jumlah Aset</label
+                                    >
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="jumlah"
+                                      name="jumlah"
+                                      value="{{ .aset_tik.Jumlah }}"
+                                    />
+                                  </div>
+                                </div>
+                                <div class="col-lg-6">
+                                  <div class="mb-3">
+                                    <label for="satuan" class="form-label"
+                                      >Satuan</label
+                                    >
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="satuan"
+                                      name="satuan"
+                                      value="{{ .aset_tik.Satuan }}"
+                                    />
+                                  </div>
+                                </div>
                               </div>
                               <div class="mb-3">
                                 <label for="keterangan" class="form-label"
