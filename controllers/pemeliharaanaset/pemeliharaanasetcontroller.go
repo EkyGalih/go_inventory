@@ -3,7 +3,7 @@ package pemeliharaanasetcontroller
 import (
 	"inventaris/entities"
 	"inventaris/helpers"
-	pemeliharaanmodel "inventaris/models/PemeliharaanModel"
+	"inventaris/models/PemeliharaanModel"
 	"inventaris/models/asettikmodel"
 	"io"
 	"net/http"

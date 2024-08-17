@@ -6,6 +6,7 @@ import (
 	"inventaris/controllers/asettikcontroller"
 	"inventaris/controllers/categorycontroller"
 	"inventaris/controllers/homecontroller"
+	"inventaris/controllers/lokasiasetcontroller"
 	"inventaris/controllers/pemeliharaanaset"
 	"inventaris/controllers/tipeasetcontroller"
 	"log"
@@ -51,6 +52,10 @@ func main() {
 	http.HandleFunc("/pemeliharaan/edit", pemeliharaanasetcontroller.Edit)
 	http.HandleFunc("/pemeliharaan/status", pemeliharaanasetcontroller.StatusUpdate)
 	http.HandleFunc("/pemeliharaan/path", pemeliharaanasetcontroller.GetGambar)
+
+	// 6. Lokasi aset
+	http.HandleFunc("/lokasi-aset", lokasiasetcontroller.Index)
+	http.HandleFunc("/lokasi-aset/add", lokasiasetcontroller.Add)
 
 	log.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)

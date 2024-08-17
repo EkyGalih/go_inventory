@@ -8,8 +8,8 @@ type LokasiAset struct {
 	Bidang_id         string
 	Pegawai_id        string
 	Tanggal_Perolehan time.Time
-	Tanggal_Selesai   time.Time
-	Jenis_Pemanfaatan string  `gorm:"type:ENUM('Habis Pakai','Pakai');DEFAULT:'Habis Pakai'"`
+	Tanggal_Selesai   *time.Time
+	Jenis_Pemanfaatan *string  `gorm:"type:ENUM('Habis Pakai','Pakai');DEFAULT:'Habis Pakai'"`
 	Keterangan        *string `gorm:"type:text"`
 	Created_At        time.Time
 	Updated_At        time.Time
