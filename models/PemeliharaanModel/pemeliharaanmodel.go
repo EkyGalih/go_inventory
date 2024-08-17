@@ -10,7 +10,20 @@ import (
 )
 
 func GetAll() []entities.Pemeliharaan {
-	rows, err := config.DB.Query(`SELECT * FROM pemeliharaan_aset ORDER BY updated_at DESC`)
+	rows, err := config.DB.Query(`
+	SELECT 
+		pa.*, 
+		at.nama_aset, 
+		at.kode_aset ,
+		at.path
+	FROM 
+		pemeliharaan_aset pa
+	JOIN 
+		aset_tik at ON pa.aset_id = at.id
+	ORDER BY 
+		pa.updated_at DESC;
+
+	`)
 	if err != nil {
 		panic(err)
 	}
@@ -20,8 +33,24 @@ func GetAll() []entities.Pemeliharaan {
 
 	for rows.Next() {
 		var pemeliharaan entities.Pemeliharaan
-		if err := rows.Scan(&pemeliharaan.Id, &pemeliharaan.Aset_id, &pemeliharaan.Tanggal_Pemeliharaan, &pemeliharaan.Kerusakan, &pemeliharaan.Perbaikan, &pemeliharaan.Keterangan, &pemeliharaan.Status, &pemeliharaan.Biaya, &pemeliharaan.Created_At, &pemeliharaan.Updated_At); err != nil {
-			panic(err)
+
+		if err := rows.Scan(
+			&pemeliharaan.Id,
+			&pemeliharaan.Aset_id,
+			&pemeliharaan.Tanggal_Pemeliharaan,
+			&pemeliharaan.Kerusakan,
+			&pemeliharaan.Perbaikan,
+			&pemeliharaan.Keterangan,
+			&pemeliharaan.Status,
+			&pemeliharaan.Nota,
+			&pemeliharaan.Biaya,
+			&pemeliharaan.Created_At,
+			&pemeliharaan.Updated_At,
+			&pemeliharaan.Nama_Aset,
+			&pemeliharaan.Kode_Aset,
+			&pemeliharaan.Path,
+			); err != nil {
+			panic(err.Error())
 		}
 
 		pemeliharaans = append(pemeliharaans, pemeliharaan)
@@ -33,8 +62,8 @@ func GetAll() []entities.Pemeliharaan {
 func Create(pemeliharaan entities.Pemeliharaan) (bool, error) {
 	newUUID := uuid.New()
 	result, err := config.DB.Exec(`
-	INSERT INTO pemeliharaan_aset (id, aset_id, tanggal_pemeliharaan, kerusakan, perbaikan, keterangan, status, biaya, created_at, updated_at)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	INSERT INTO pemeliharaan_aset (id, aset_id, tanggal_pemeliharaan, kerusakan, perbaikan, keterangan, status, nota, biaya, created_at, updated_at)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		newUUID,
 		pemeliharaan.Aset_id,
 		pemeliharaan.Tanggal_Pemeliharaan,
@@ -42,6 +71,7 @@ func Create(pemeliharaan entities.Pemeliharaan) (bool, error) {
 		pemeliharaan.Perbaikan,
 		pemeliharaan.Keterangan,
 		pemeliharaan.Status,
+		pemeliharaan.Nota,
 		pemeliharaan.Biaya,
 		pemeliharaan.Created_At,
 		pemeliharaan.Updated_At,
@@ -60,10 +90,38 @@ func Create(pemeliharaan entities.Pemeliharaan) (bool, error) {
 }
 
 func Detail(id string) (entities.Pemeliharaan, error) {
-	row := config.DB.QueryRow(`SELECT * FROM pemeliharaan_aset WHERE id = ?`, id)
+	row := config.DB.QueryRow(`
+	SELECT 
+		pa.*, 
+		at.nama_aset, 
+		at.kode_aset,
+		at.path
+	FROM 
+		pemeliharaan_aset pa
+	JOIN 
+		aset_tik at ON pa.aset_id = at.id
+	WHERE 
+		pa.id = ?
+	ORDER BY 
+		pa.updated_at DESC`, id)
 
 	var pemeliharaan entities.Pemeliharaan
-	if err := row.Scan(&pemeliharaan.Id, &pemeliharaan.Aset_id, &pemeliharaan.Tanggal_Pemeliharaan, &pemeliharaan.Kerusakan, &pemeliharaan.Perbaikan, &pemeliharaan.Keterangan, &pemeliharaan.Status, &pemeliharaan.Biaya, &pemeliharaan.Created_At, &pemeliharaan.Updated_At); err != nil {
+
+	if err := row.Scan(&pemeliharaan.Id, 
+		&pemeliharaan.Aset_id, 
+		&pemeliharaan.Tanggal_Pemeliharaan, 
+		&pemeliharaan.Kerusakan, 
+		&pemeliharaan.Perbaikan, 
+		&pemeliharaan.Keterangan, 
+		&pemeliharaan.Status, 
+		&pemeliharaan.Nota, 
+		&pemeliharaan.Biaya, 
+		&pemeliharaan.Created_At, 
+		&pemeliharaan.Updated_At,
+		&pemeliharaan.Nama_Aset,
+		&pemeliharaan.Kode_Aset,
+		&pemeliharaan.Path,
+		); err != nil {
 		if err == sql.ErrNoRows {
 			return pemeliharaan, fmt.Errorf("pemeliharaan aset tidak ditemukan dengan id %s", id)
 		}
@@ -73,7 +131,7 @@ func Detail(id string) (entities.Pemeliharaan, error) {
 	return pemeliharaan, nil
 }
 
-func Update(id string, pemeliharaan entities.Pemeliharaan) bool {
+func Update(id string, pemeliharaan entities.Pemeliharaan) (bool, error) {
 	query, err := config.DB.Exec(`
 	UPDATE pemeliharaan_aset
 		SET
@@ -83,6 +141,7 @@ func Update(id string, pemeliharaan entities.Pemeliharaan) bool {
 			perbaikan = ?,
 			keterangan = ?,
 			status = ?,
+			nota = ?,
 			biaya = ?,
 			updated_at = ?
 		WHERE id = ?
@@ -93,6 +152,7 @@ func Update(id string, pemeliharaan entities.Pemeliharaan) bool {
 		pemeliharaan.Perbaikan,
 		pemeliharaan.Keterangan,
 		pemeliharaan.Status,
+		pemeliharaan.Nota,
 		pemeliharaan.Biaya,
 		pemeliharaan.Updated_At,
 		id,
@@ -106,7 +166,31 @@ func Update(id string, pemeliharaan entities.Pemeliharaan) bool {
 		panic(err)
 	}
 
-	return result > 0
+	return result > 0, nil
+}
+
+func ChangeStatus(id string, pemeliharaan entities.Pemeliharaan) (bool, error) {
+	query, err := config.DB.Exec(`
+	UPDATE pemeliharaan_aset
+		SET
+		status = ?,
+		updated_at = ?
+		WHERE id = ?
+	`,
+		pemeliharaan.Status,
+		pemeliharaan.Updated_At,
+		id,
+	)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	result, err := query.RowsAffected()
+	if err != nil {
+		panic(err)
+	}
+
+	return result > 0, nil
 }
 
 func Delete(id string) error {

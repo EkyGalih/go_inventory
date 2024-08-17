@@ -48,6 +48,8 @@ func main() {
 	// 5. Pemeliharaan
 	http.HandleFunc("/pemeliharaan", pemeliharaanasetcontroller.Index)
 	http.HandleFunc("/pemeliharaan/add", pemeliharaanasetcontroller.Add)
+	http.HandleFunc("/pemeliharaan/edit", pemeliharaanasetcontroller.Edit)
+	http.HandleFunc("/pemeliharaan/status", pemeliharaanasetcontroller.StatusUpdate)
 	http.HandleFunc("/pemeliharaan/path", pemeliharaanasetcontroller.GetGambar)
 
 	log.Println("Server running on port 8080")

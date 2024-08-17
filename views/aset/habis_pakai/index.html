@@ -124,7 +124,6 @@
                   id="kt_app_content_container"
                   class="app-container container-fluid"
                 >
-                  <div class="row g-5 align-items-center mb-5">
                       <div class="row g-6 mb-6 g-xl-9 mb-xl-9">
                         {{range .aset_tiks}}
                         <div class="col-md-6 col-xxl-4">
@@ -171,7 +170,7 @@
                                     </div>
                                   </div>
                               </div>
-                                <a href="#" class="fs-4 text-white text-hover-primary fw-bold mb-0 text-shadow">{{.Nama_Aset}}</a>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#DetailAset{{.Id}}" class="fs-4 text-white text-hover-primary fw-bold mb-0 text-shadow">{{.Nama_Aset}}</a>
                                 <div class="fw-semibold text-white mb-6 text-shadow">{{.Kode_Aset}}</div>
                                 <div class="d-flex flex-wrap mb-5">
                                   <div class="border border-dashed border-white rounded min-w-90px py-3 px-4 mx-2 mb-3">
@@ -192,82 +191,68 @@
                           </div>
                         </div>
                         <!-- Detail:: Begin Modal -->
-                      <div
-                      class="modal fade"
-                      id="DetailAset{{.Id}}"
-                      tabindex="-1"
-                      aria-hidden="true"
-                    >
-                      <div
-                        class="modal-dialog modal-dialog-centered mw-650px"
-                      >
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h2 class="modal-title">Detail Aset</h2>
-                            <div
-                              class="btn btn-sm btn-icon btn-active-color-primary"
-                              data-bs-dismiss="modal"
-                            >
-                              <i class="ki-duotone ki-cross fs-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                              </i>
+                      <div class="modal fade" id="DetailAset{{.Id}}"tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered mw-650px">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h2 class="modal-title">Detail Aset</h2>
+                              <div
+                                class="btn btn-sm btn-icon btn-active-color-primary"
+                                data-bs-dismiss="modal"
+                              >
+                                <i class="ki-duotone ki-cross fs-1">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                </i>
+                              </div>
                             </div>
-                          </div>
-                          <div class="modal-body">
-                            <div class="row">
-                              <div class="col-lg-6">
-                                <div class="pb-5 fs-6">
-                                  <div class="fw-bold mt-5">{{.Nama_Aset}} ({{.Serial_Number}})</div>
-                                  <div class="text-gray-600">{{.Kode_Aset}}</div>
-                                  <div class="fw-bold mt-5">{{.Merek}}</div>
-                                  <div class="text-gray-600">{{.Model}}</div>
-                                  <div class="fw-bold mt-5">Stok</div>
-                                  <div class="text-gray-600">{{.Jumlah}} {{.Satuan}}</div>
-                                  <div class="fw-bold mt-5">Terpakai</div>
-                                  <div class="text-gray-600">
-                                    {{ if $.distribusi }} {{ $dist := index
-                                      $.distribusi .Id }} {{ if $dist }}{{ $dist
-                                      }}{{ else }}0{{ end }}/{{ .Jumlah }} {{.Satuan}}
-                                      {{ else }} 0/{{ .Jumlah }} {{.Satuan}} {{
-                                      end }}
+                            <div class="modal-body">
+                              <div class="row">
+                                <div class="col-lg-6">
+                                  <div class="pb-5 fs-6">
+                                    <div class="fw-bold mt-5">{{.Nama_Aset}} ({{.Serial_Number}})</div>
+                                    <div class="text-gray-600">{{.Kode_Aset}}</div>
+                                    <div class="fw-bold mt-5">{{.Merek}}</div>
+                                    <div class="text-gray-600">{{.Model}}</div>
+                                    <div class="fw-bold mt-5">Stok</div>
+                                    <div class="text-gray-600">{{.Jumlah}} {{.Satuan}}</div>
+                                    <div class="fw-bold mt-5">Terpakai</div>
+                                    <div class="text-gray-600">
+                                      {{ if $.distribusi }} {{ $dist := index
+                                        $.distribusi .Id }} {{ if $dist }}{{ $dist
+                                        }}{{ else }}0{{ end }}/{{ .Jumlah }} {{.Satuan}}
+                                        {{ else }} 0/{{ .Jumlah }} {{.Satuan}} {{
+                                        end }}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div class="col-lg-6">
-                                <img src="{{.Path}}" alt="{{.Nama_Aset}}" style="width: 100%; height: 250px;">
+                                <div class="col-lg-6">
+                                  <img src="{{.Path}}" alt="{{.Nama_Aset}}" style="width: 100%; height: 250px;">
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div class="modal-footer">
-                            <button
-                              type="button"
-                              class="btn btn-secondary"
-                              data-bs-dismiss="modal"
-                            >
-                              <i class="ki-duotone ki-cross fs-5">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                              </i>
-                              Close
-                            </button>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                              >
+                                <i class="ki-duotone ki-cross fs-5">
+                                  <span class="path1"></span>
+                                  <span class="path2"></span>
+                                  <span class="path3"></span>
+                                  <span class="path4"></span>
+                                </i>
+                                Close
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <!-- Detail:: End Modal -->
+                      <!-- Detail:: End Modal -->
                       <!-- Hapus:: Begin Modal -->
-                      <div
-                        class="modal fade"
-                        id="HapusAset{{.Id}}"
-                        tabindex="-1"
-                        aria-hidden="true"
-                      >
-                        <div
-                          class="modal-dialog modal-dialog-centered mw-650px"
-                        >
+                      <div class="modal fade" id="HapusAset{{.Id}}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered mw-650px">
                           <div class="modal-content">
                             <div class="modal-header">
                               <h2 class="modal-title">Hapus Aset</h2>

@@ -13,6 +13,21 @@
     };
   };
 
+  var loadFilePdf = function (event) {
+    var output = document.getElementById("pdf");
+    var file = event.target.files[0];
+
+    if (file && file.type === 'application/pdf') {
+        var url = URL.createObjectURL(file);
+        output.src = url;
+        output.onload = function () {
+            URL.revokeObjectURL(url); // free memory
+        };
+    } else {
+        alert('Please upload a valid PDF file.');
+    }
+};
+
   function isInputNumber(event) {
     var char = String.fromCharCode(event.which);
     if (!/[0-9]/.test(char)) {

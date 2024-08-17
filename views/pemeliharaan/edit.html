@@ -122,7 +122,7 @@
                         <span class="bullet bg-gray-500 w-5px h-2px"></span>
                       </li>
 
-                      <li class="breadcrumb-item text-muted">Tambah</li>
+                      <li class="breadcrumb-item text-muted">Edit</li>
                     </ul>
                   </div>
                 </div>
@@ -136,7 +136,8 @@
                   <div class="row g-5 align-items-center mb-5">
                     <div class="card card-flush pt-3 mb-5 pt-10">
                       <div class="card-body pt-0">
-                        <form action="/pemeliharaan/add" method="POST" enctype="multipart/form-data">
+                        <form action="/pemeliharaan/edit" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="id" value="{{.pemeliharaan.Id}}">
                           <div class="row">
                             <div class="col-lg-6">
                               <div class="mb-3">
@@ -146,7 +147,7 @@
                                 <select name="aset_id" id="aset_id" class="form-select" data-control="select2" data-placeholder="Pilih Aset">
                                     <option></option>
                                     {{range .aset_tik}}
-                                    <option value="{{.Id}}">{{ .Nama_Aset }} - {{.Kode_Aset}}</option>
+                                    <option value="{{.Id}}" {{if eq .Id $.SelectedAset}} selected {{end}}>{{ .Nama_Aset }} - {{.Kode_Aset}}</option>
                                     {{end}}
                                 </select>
                               </div>
@@ -161,6 +162,7 @@
                                   class="form-control"
                                   id="tanggal_pemeliharaan"
                                   name="tanggal_pemeliharaan"
+                                  value="{{formatDate .pemeliharaan.Tanggal_Pemeliharaan}}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -171,7 +173,7 @@
                                   name="kerusakan"
                                   class="form-control"
                                   id="kerusakan"
-                                ></textarea>
+                                >{{.pemeliharaan.Kerusakan}}</textarea>
                               </div>
                               <div class="mb-3">
                                 <label for="perbaikan" class="form-label"
@@ -181,7 +183,7 @@
                                   name="perbaikan"
                                   class="form-control"
                                   id="perbaikan"
-                                ></textarea>
+                                >{{.pemeliharaan.Perbaikan}}</textarea>
                               </div>
                               <div class="mb-3">
                                 <label for="biaya" class="form-label"
@@ -194,6 +196,7 @@
                                   name="biaya"
                                   onkeypress="isInputNumber(event)"
                                   oninput="formatRupiah(this)"
+                                  value="{{.pemeliharaan.Biaya}}"
                                 />
                               </div>
                               <div class="mb-3">
@@ -204,11 +207,11 @@
                                   name="keterangan"
                                   class="form-control"
                                   id="keterangan"
-                                ></textarea>
+                                >{{.Keterangan}}</textarea>
                               </div>
                               <div class="d-flex justify-content-end mt-10">
                                 <a
-                                href="/aset/aset-tik"
+                                href="/pemeliharaan"
                                 class="btn btn-sm fw-bold btn-secondary me-3"
                                 >
                                 <i class="ki-duotone ki-arrow-left fs-2">
@@ -220,16 +223,20 @@
                                 </a>
                                 <button
                                   type="submit"
-                                  class="btn btn-primary btn-sm"
+                                  class="btn btn-success btn-sm"
                                 >
-                                  <i class="ki-duotone ki-plus fs-2"></i>
-                                  Add
+                                  <i class="ki-duotone ki-send fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                  </i>
+                                  Save
                                 </button>
                             </div>
                             </div>
                             <div class="col-lg-6">
                               <div class="mb-3">
-                                <img id="imagePreview" style="width: 100%; height: 500px;" src="" alt="Image Preview" />
+                                <img id="imagePreview" style="width: 100%; height: 500px;" src="{{.pemeliharaan.Path}}" alt="Image Preview" />
                               </div>
                                 <div class="mb-3">
                                   <label for="gambar" class="form-label"
@@ -248,7 +255,7 @@
                                     <input type="file" name="nota" id="userImage" accept="application/pdf"
                                         onchange="loadFilePdf(event)">
                                 </p>
-                                <iframe id="pdf" style="width: 100%; height: 600px; border: none;"></iframe>
+                                <iframe id="pdf" style="width: 100%; height: 600px; border: none;" src="{{.pemeliharaan.Nota}}"></iframe>
                                 </div>
                           </div>
                         </form>

@@ -32,6 +32,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
         "sub": sub,
         "until": until,
         "toInt": toInt,
+        "StrLimit": StrLimit,
     })
 
     // Parse the partial templates
@@ -213,3 +214,10 @@ func toInt(val interface{}) int {
 }
 
 // end pagination
+
+func StrLimit(s string, limit int) string {
+	if len(s) > limit {
+		return s[:limit] + "..."
+	}
+	return s
+}
