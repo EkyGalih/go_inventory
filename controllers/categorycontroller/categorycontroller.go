@@ -2,7 +2,7 @@ package categorycontroller
 
 import (
 	"inventaris/entities"
-	"inventaris/helpers"
+	"inventaris/helpers/helpers"
 	"inventaris/models/categorymodel"
 	"net/http"
 	"time"
@@ -11,7 +11,7 @@ import (
 func Index(w http.ResponseWriter, r *http.Request) {
 	categories := categorymodel.GetAll()
 	path := map[string]string{
-		"menu": "addons",
+		"menu":    "addons",
 		"subMenu": "category",
 	}
 

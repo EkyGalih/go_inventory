@@ -9,7 +9,7 @@ type LokasiAset struct {
 	Pegawai_id        string
 	Tanggal_Perolehan time.Time
 	Tanggal_Selesai   *time.Time
-	Jenis_Pemanfaatan *string  `gorm:"type:ENUM('Habis Pakai','Pakai');DEFAULT:'Habis Pakai'"`
+	Jenis_Pemanfaatan *string `gorm:"type:ENUM('Habis Pakai','Tetap');DEFAULT:'Tetap'"`
 	Keterangan        *string `gorm:"type:text"`
 	Created_At        time.Time
 	Updated_At        time.Time
@@ -19,4 +19,7 @@ type LokasiAset struct {
 	Nama_Bidang       string
 	Nama_Pegawai      string
 	Nip_Pegawai       string
+	Foto_Pegawai      *string `gorm:"type:text"`
+	Jenis_Pegawai     string
+	Jabatan           string
 }

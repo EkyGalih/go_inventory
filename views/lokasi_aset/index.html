@@ -148,29 +148,16 @@
                               data-kt-menu="true"
                             >
                               <div class="menu-item">
-                                <div
+                                <a
                                   class="menu-link"
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#Detail{{.Id}}"
+                                  href="/lokasi-aset/daftar?pegawai_id={{.Pegawai_id}}"
                                 >
                                   <i class="ki-duotone ki-eye fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                   </i>
-                                  Detail
-                                </div>
-                              </div>
-                              <div class="menu-item">
-                                <a
-                                  class="menu-link"
-                                  href="/pemeliharaan/edit?id={{.Id}}"
-                                >
-                                  <i class="ki-duotone ki-pencil fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                  </i>
-                                  Edit
+                                  Daftar Aset
                                 </a>
                               </div>
                             </div>
@@ -179,13 +166,15 @@
                             <div
                               class="symbol symbol-80px symbol-lg-150px mb-4"
                             >
-                              <img src="{{.Path}}" alt="{{.Nama_Pegawai}}" />
+                              <img
+                                src="/public/uploads/pegawai/{{.Foto_Pegawai}}"
+                                alt="{{.Nama_Pegawai}}"
+                              />
                             </div>
                             <div class="text-center">
-                              <a
-                                href="pages/user-profile/overview.html"
-                                class="text-gray-800 fw-bold text-hover-primary fs-4"
-                                >{{StrLimit .Nama_Pegawai 20}}</a
+                              <span
+                                class="text-gray-800 fw-bold fs-4"
+                                >{{StrLimit .Nama_Pegawai 20}}</span
                               >
                               <span class="text-muted d-block fw-semibold"
                                 >{{.Nip_Pegawai}}</span
@@ -193,32 +182,37 @@
                             </div>
                           </div>
                           <div class="row px-9 mb-4">
-                            <div class="col-md-6 text-center">
+                            <div class="col-md-8 text-center">
                               <div class="text-gray-800 fw-bold fs-3">
                                 <span class="text-gray-500 fs-8 d-block fw-bold"
                                   >Bidang</span
                                 >
                                 <span
-                                  class="m-0 counted"
-                                  data-kt-countup="true"
-                                  data-kt-countup-value="24"
-                                  data-kt-initialized="1"
+                                  class="m-0 fs-6"
                                   >{{.Nama_Bidang}}</span
                                 >
                               </div>
                             </div>
-                            <div class="col-md-6 text-center">
+                            <div class="col-md-4 text-center">
                               <div class="text-gray-800 fw-bold fs-3">
                                 <span
                                   class="m-0 counted"
                                   data-kt-countup="true"
                                   data-kt-countup-value="12"
                                   data-kt-initialized="1"
-                                  >12</span
-                                >K
+                                >
+                                  {{ if $.aset_pegawai }} 
+                                  {{ $aset := index $.aset_pegawai .Pegawai_id }} 
+                                    {{ if $aset }}
+                                      {{ $aset}}
+                                    {{ else }}
+                                      0
+                                    {{ end }}
+                                  {{ end }}
+                                </span>
                               </div>
                               <span class="text-gray-500 fs-8 d-block fw-bold"
-                                >FOLLOWING</span
+                                >Aset</span
                               >
                             </div>
                           </div>

@@ -3,7 +3,7 @@ package tipeasetcontroller
 import (
 	"fmt"
 	"inventaris/entities"
-	"inventaris/helpers"
+	"inventaris/helpers/helpers"
 	"inventaris/models/tipemodel"
 	"net/http"
 	"time"

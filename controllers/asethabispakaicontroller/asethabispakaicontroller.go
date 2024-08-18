@@ -2,7 +2,8 @@ package asethabispakaicontroller
 
 import (
 	"inventaris/entities"
-	"inventaris/helpers"
+	"inventaris/helpers/helpers"
+	"inventaris/helpers/queryhelpers"
 	"inventaris/models/asethabispakaimodel"
 	"inventaris/models/categorymodel"
 	"inventaris/models/tipemodel"
@@ -44,7 +45,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
 
-	distribusi := helpers.GetDistribusi(aset_tiks)
+	distribusi := queryhelpers.GetDistribusi(aset_tiks)
 	if distribusi == nil {
 		distribusi = make(map[string]int)
 	}

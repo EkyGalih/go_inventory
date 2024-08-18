@@ -2,7 +2,7 @@ package pemeliharaanasetcontroller
 
 import (
 	"inventaris/entities"
-	"inventaris/helpers"
+	"inventaris/helpers/helpers"
 	"inventaris/models/PemeliharaanModel"
 	"inventaris/models/asettikmodel"
 	"io"

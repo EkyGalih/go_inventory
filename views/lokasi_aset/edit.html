@@ -136,7 +136,8 @@
                   <div class="row g-5 align-items-center mb-5">
                     <div class="card card-flush pt-3 mb-5 pt-10">
                       <div class="card-body pt-0">
-                        <form action="/lokasi-aset/add" method="POST" enctype="multipart/form-data">
+                        <form action="/lokasi-aset/edit" method="POST">
+                            <input type="hidden" name="id" value="{{.lokasiaset.Id}}">
                           <div class="row">
                             <div class="col-lg-6">
                               <div class="mb-3">
@@ -146,7 +147,7 @@
                                 <select name="aset_id" id="aset_id" class="form-select" data-control="select2" data-placeholder="Pilih Aset">
                                   <option></option>
                                   {{ range .aset }}
-                                  <option value="{{ .Id }}">
+                                  <option value="{{ .Id }}" {{ if eq .Id $.SelectedAset }} selected {{ end }}>
                                     {{ .Nama_Aset }}
                                   </option>
                                   {{ end }}
@@ -159,7 +160,7 @@
                                 <select name="pegawai_id" id="pegawai_id" class="form-select" data-control="select2" data-placeholder="Pilih Pemegang Aset">
                                   <option></option>
                                   {{range .pegawai}}
-                                  <option value="{{.Id}}">{{.Name}} - {{.Nip}}</option>
+                                  <option value="{{.Id}}" {{ if eq .Id $.SelectedPegawai }} selected {{ end }}>{{.Name}} - {{.Nip}}</option>
                                   {{end}}
                                 </select>
                               </div>
@@ -170,7 +171,7 @@
                                 <select name="bidang_id" id="bidang_id" class="form-select" data-control="select2" data-placeholder="Pilih Bidang">
                                     <option></option>
                                     {{range .bidang}}
-                                    <option value="{{.Id}}">{{.Nama_Bidang}}</option>
+                                    <option value="{{.Id}}" {{ if eq .Id $.SelectedBidang }} selected {{ end }}>{{.Nama_Bidang}}</option>
                                     {{end}}
                                 </select>
                               </div>
@@ -183,6 +184,7 @@
                                         class="form-control"
                                         id="tanggal_perolehan"
                                         name="tanggal_perolehan"
+                                        value="{{formatDate .lokasiaset.Tanggal_Perolehan}}"
                                         />
                                     </div>
                                     <div class="col-lg-6">
@@ -192,6 +194,7 @@
                                         class="form-control"
                                         id="tanggal_selesai"
                                         name="tanggal_selesai"
+                                        value="{{if .lokasiaset.Tanggal_Selesai}}{{formatDate .lokasiaset.Tanggal_Selesai}}{{end}}"
                                         />
                                     </div>
                                 </div>
@@ -204,8 +207,8 @@
                                     >
                                     <select name="jenis_aset" class="form-select" data-control="select2" data-placeholder="Pilih Jenis">
                                     <option></option>
-                                    <option value="Tetap">Tetap</option>
-                                    <option value="Habis Pakai">Habis Pakai</option>
+                                    <option value="Tetap" {{ if and $.SelectedJenisAset (eq $.SelectedJenisAset "Tetap") }}selected{{ end }}>Tetap</option>
+                                    <option value="Habis Pakai" {{ if and $.SelectedJenisAset (eq $.SelectedJenisAset "Habis Pakai") }}selected{{ end }}>Habis Pakai</option>                                    
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -216,7 +219,7 @@
                                     name="keterangan"
                                     class="form-control"
                                     id="keterangan"
-                                    ></textarea>
+                                    >{{.lokasiaset.Keterangan}}</textarea>
                                 </div>
                                 <div class="d-flex justify-content-end mt-10">
                                     <a
@@ -232,10 +235,14 @@
                                     </a>
                                     <button
                                     type="submit"
-                                    class="btn btn-primary btn-sm"
+                                    class="btn btn-success btn-sm"
                                     >
-                                    <i class="ki-duotone ki-plus fs-2"></i>
-                                    Add
+                                    <i class="ki-duotone ki-send fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    Simpan
                                     </button>
                                 </div>
                             </div>

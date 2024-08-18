@@ -2,9 +2,12 @@ package asettikcontroller
 
 import (
 	"inventaris/entities"
-	"inventaris/helpers"
+	"inventaris/helpers/helpers"
+	"inventaris/helpers/queryhelpers"
 	"inventaris/models/asettikmodel"
+	"inventaris/models/bidangmodel"
 	"inventaris/models/categorymodel"
+	"inventaris/models/pegawaimodel"
 	"inventaris/models/tipemodel"
 	"io"
 	"math"
@@ -46,7 +49,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
 
-	distribusi := helpers.GetDistribusi(aset_tik)
+	distribusi := queryhelpers.GetDistribusi(aset_tik)
 	if distribusi == nil {
 		distribusi = make(map[string]int)
 	}
@@ -61,7 +64,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		"Title":      "Aset TIK",
 		"path":       path,
 		"Page":       page,
-		"TotalPages":  totalPages,
+		"TotalPages": totalPages,
 		"TotalRows":  totalRows,
 		"Limit":      limit,
 		"aset_tiks":  aset_tiks,
@@ -301,6 +304,40 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to update aset_tik", http.StatusInternalServerError)
 		}
 	}
+}
+
+func Distribusi(w http.ResponseWriter, r *http.Request) {
+	idString := r.URL.Query().Get("aset_id")
+	if idString == "" {
+		http.Error(w, "Missing id parameter", http.StatusBadRequest)
+		return
+	}
+
+	asets := asettikmodel.GetAll()
+	bidang := bidangmodel.GetAll()
+	pegawai := pegawaimodel.GetALl()
+	aset, err := asettikmodel.Detail(idString)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	path := map[string]string{
+		"menu":    "aset",
+		"subMenu": "aset-tik",
+	}
+
+	data := map[string]interface{}{
+		"Title":        "Distribusi Aset",
+		"path":         path,
+		"aset":         aset,
+		"asets":        asets,
+		"bidang":       bidang,
+		"pegawai":      pegawai,
+		"SelectedAset": aset.Id,
+	}
+
+	helpers.RenderTemplate(w, "aset/aset_tik/distribusi.html", data)
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {

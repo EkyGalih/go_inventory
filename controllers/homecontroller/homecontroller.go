@@ -1,7 +1,7 @@
 package homecontroller
 
 import (
-	"inventaris/helpers"
+	"inventaris/helpers/helpers"
 	"net/http"
 )
 

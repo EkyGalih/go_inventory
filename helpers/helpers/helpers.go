@@ -4,8 +4,6 @@ package helpers
 import (
 	"fmt"
 	"html/template"
-	"inventaris/config"
-	"inventaris/entities"
 	"math"
 	"math/rand"
 	"net/http"
@@ -135,24 +133,6 @@ func ConvertFloatToInt(f float64) int {
 // Returns a string representing the formatted date in the format "YYYY-MM-DD".
 func formatDate(t time.Time) string {
     return t.Format("2006-01-02")
-}
-
-// GetDistribusi generates a map of asset distribution based on the provided asset list.
-//
-// Parameter aset_tiks is a list of AsetTik entities.
-// Returns a map of asset IDs to their respective distribution counts.
-func GetDistribusi(aset_tiks []entities.AsetTik) map[string]int {
-    distribusi := make(map[string]int)
-    for _, aset := range aset_tiks {
-        var count int
-        err := config.DB.QueryRow("SELECT COUNT(*) FROM lokasi_aset WHERE aset_id = ?", aset.Id).Scan(&count)
-        if err != nil {
-            // Handle error, misalnya dengan logging
-            continue
-        }
-        distribusi[aset.Id] = count
-    }
-    return distribusi
 }
 
 // removeHTMLTags removes HTML tags from a given input string.

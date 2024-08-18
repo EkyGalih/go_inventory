@@ -145,8 +145,8 @@
                                 >
                                 <select name="aset_id" id="aset_id" class="form-select" data-control="select2" data-placeholder="Pilih Aset">
                                   <option></option>
-                                  {{ range .aset }}
-                                  <option value="{{ .Id }}">
+                                  {{ range .asets }}
+                                  <option value="{{ .Id }}" {{ if eq .Id $.SelectedAset}} selected {{end}}>
                                     {{ .Nama_Aset }}
                                   </option>
                                   {{ end }}
@@ -202,10 +202,10 @@
                                     <label for="jenis_aset" class="form-label"
                                     >Jenis Aset</label
                                     >
-                                    <select name="jenis_aset" class="form-select" data-control="select2" data-placeholder="Pilih Jenis">
+                                    <select name="jenis_pemanfaatan" class="form-select" data-control="select2" data-placeholder="Pilih Jenis">
                                     <option></option>
-                                    <option value="Tetap">Tetap</option>
-                                    <option value="Habis Pakai">Habis Pakai</option>
+                                    <option value="Tetap">Aset Tetap</option>
+                                    <option value="Habis Pakai">Aset Habis Pakai</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -260,16 +260,6 @@
     ></script>
     <script>
       $(document).ready(function () {
-        ClassicEditor.create(document.querySelector("#deskripsi"), {
-          // Konfigurasi tambahan untuk CKEditor
-          height: 500, // Atur tinggi editor di sini
-        })
-          .then((editor) => {
-            console.log(editor);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
         ClassicEditor.create(document.querySelector("#keterangan"), {
           // Konfigurasi tambahan untuk CKEditor
           height: 500, // Atur tinggi editor di sini

@@ -33,6 +33,7 @@ func main() {
 	http.HandleFunc("/aset/aset-tik", asettikcontroller.Index)
 	http.HandleFunc("/aset/aset-tik/add", asettikcontroller.Add)
 	http.HandleFunc("/aset/aset-tik/edit", asettikcontroller.Edit)
+	http.HandleFunc("/aset/aset-tik/distribusi", asettikcontroller.Distribusi)
 	http.HandleFunc("/aset/aset-tik/delete", asettikcontroller.Delete)
 
 	http.HandleFunc("/aset/habis-pakai", asethabispakaicontroller.Index)
@@ -56,6 +57,8 @@ func main() {
 	// 6. Lokasi aset
 	http.HandleFunc("/lokasi-aset", lokasiasetcontroller.Index)
 	http.HandleFunc("/lokasi-aset/add", lokasiasetcontroller.Add)
+	http.HandleFunc("/lokasi-aset/edit", lokasiasetcontroller.Edit)
+	http.HandleFunc("/lokasi-aset/daftar", lokasiasetcontroller.AsetPegawai)
 
 	log.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)

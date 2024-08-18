@@ -18,7 +18,8 @@ func GetAll() []entities.LokasiAset {
 			at.path,
 			bb.nama_bidang,
 			pp.name,
-			pp.nip
+			pp.nip,
+			pp.foto
 		FROM 
 			lokasi_aset la
 		JOIN 
@@ -60,6 +61,7 @@ func GetAll() []entities.LokasiAset {
 			&lokasiaset.Nama_Bidang,
 			&lokasiaset.Nama_Pegawai,
 			&lokasiaset.Nip_Pegawai,
+			&lokasiaset.Foto_Pegawai,
 		); err != nil {
 			panic(err.Error())
 		}
@@ -119,14 +121,17 @@ func Detail(id string) (entities.LokasiAset, error) {
 			at.kode_aset,
 			at.path,
 			bb.nama_bidang,
+			pp.name,
 			pp.nip, 
-			pp.name
+			pp.foto,
+			pp.jenis_pegawai,
+			pp.jabatan
 		FROM 
 			lokasi_aset la
 		JOIN 
 			aset_tik at ON la.aset_id = at.id
 		JOIN 
-			bidang_aset bb ON la.bidang_id = bb.id
+			bidang bb ON la.bidang_id = bb.id
 		JOIN 
 			pegawai pp ON la.pegawai_id = pp.id
 		WHERE 
@@ -153,6 +158,9 @@ func Detail(id string) (entities.LokasiAset, error) {
 		&lokasiaset.Nama_Bidang,
 		&lokasiaset.Nama_Pegawai,
 		&lokasiaset.Nip_Pegawai,
+		&lokasiaset.Foto_Pegawai,
+		&lokasiaset.Jenis_Pegawai,
+		&lokasiaset.Jabatan,
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return lokasiaset, fmt.Errorf("lokasi aset tidak ditemukan dengan id %s", id)
@@ -161,6 +169,66 @@ func Detail(id string) (entities.LokasiAset, error) {
 	}
 
 	return lokasiaset, nil
+}
+
+func DaftarAset(pegawai_id string) []entities.LokasiAset {
+	rows, err := config.DB.Query(`
+	SELECT 
+			la.*, 
+			at.nama_aset, 
+			at.kode_aset,
+			at.path,
+			bb.nama_bidang,
+			pp.nip, 
+			pp.name
+		FROM 
+			lokasi_aset la
+		JOIN 
+			aset_tik at ON la.aset_id = at.id
+		JOIN 
+			bidang bb ON la.bidang_id = bb.id
+		JOIN 
+			pegawai pp ON la.pegawai_id = pp.id
+		WHERE 
+			la.pegawai_id = ?
+		ORDER BY 
+			la.updated_at DESC`, pegawai_id)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+
+	var lokasiasets []entities.LokasiAset
+
+	for rows.Next() {
+		var lokasiaset entities.LokasiAset
+
+		if err := rows.Scan(
+			&lokasiaset.Id,
+			&lokasiaset.Aset_id,
+			&lokasiaset.Bidang_id,
+			&lokasiaset.Pegawai_id,
+			&lokasiaset.Tanggal_Perolehan,
+			&lokasiaset.Tanggal_Selesai,
+			&lokasiaset.Jenis_Pemanfaatan,
+			&lokasiaset.Keterangan,
+			&lokasiaset.Created_At,
+			&lokasiaset.Updated_At,
+			&lokasiaset.Nama_Aset,
+			&lokasiaset.Kode_Aset,
+			&lokasiaset.Path,
+			&lokasiaset.Nama_Bidang,
+			&lokasiaset.Nama_Pegawai,
+			&lokasiaset.Nip_Pegawai,
+		); err != nil {
+			panic(err.Error())
+		}
+
+		lokasiasets = append(lokasiasets, lokasiaset)
+	}
+
+	return lokasiasets
 }
 
 func Update(id string, lokasiaset entities.LokasiAset) (bool, error) {

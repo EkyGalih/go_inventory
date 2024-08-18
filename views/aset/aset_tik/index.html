@@ -150,7 +150,7 @@
                                 <div class="d-flex flex-column">
                                   <div class="d-flex align-items-center">
                                     <a
-                                      href="http://bpkad.test/admin/inventaris/aset-tik/detail-aset/aeaaadc0-dbcd-4b6f-94a1-bcd2e7652bc4"
+                                      href="#"
                                       class="text-gray-900 text-hover-primary fs-2 fw-bold me-1"
                                       >{{ .Nama_Aset }}</a
                                     >
@@ -227,7 +227,7 @@
                                     </button>
                                     {{ else }}
                                     <a
-                                      href="/aset/aset-tik/distribusi?id={{ .Id }}"
+                                      href="/aset/aset-tik/distribusi?aset_id={{ .Id }}"
                                       class="btn btn-sm btn-primary me-3"
                                       >Distribusi</a
                                     >
@@ -456,34 +456,47 @@
                         <!-- Previous Button -->
                         {{if gt .Page 1}}
                         <li class="page-item previous">
-                            <a class="page-link page-text" href="?page={{sub .Page 1}}&limit={{.Limit}}">Previous</a>
+                          <a
+                            class="page-link page-text"
+                            href="?page={{sub .Page 1}}&limit={{.Limit}}"
+                            >Previous</a
+                          >
                         </li>
                         {{else}}
                         <li class="page-item previous disabled">
-                            <span class="page-link page-text">Previous</span>
+                          <span class="page-link page-text">Previous</span>
                         </li>
                         {{end}}
-                    
+
                         <!-- Page Number Links -->
                         {{range $i := until .TotalPages}}
-                        <li class="page-item {{if eq (add $i 1) $.Page}}active{{end}}">
-                            <a href="?page={{add $i 1}}&limit={{$.Limit}}" class="page-link">
-                                {{add $i 1}}
-                            </a>
+                        <li
+                          class="page-item {{if eq (add $i 1) $.Page}}active{{end}}"
+                        >
+                          <a
+                            href="?page={{add $i 1}}&limit={{$.Limit}}"
+                            class="page-link"
+                          >
+                            {{add $i 1}}
+                          </a>
                         </li>
                         {{end}}
-                    
+
                         <!-- Next Button -->
                         {{if lt .Page .TotalPages}}
                         <li class="page-item next">
-                            <a class="page-link page-text" href="?page={{add .Page 1}}&limit={{.Limit}}">Next</a>
+                          <a
+                            class="page-link page-text"
+                            href="?page={{add .Page 1}}&limit={{.Limit}}"
+                            >Next</a
+                          >
                         </li>
                         {{else}}
                         <li class="page-item next disabled">
-                            <span class="page-link page-text">Next</span>
+                          <span class="page-link page-text">Next</span>
                         </li>
                         {{end}}
-                    </ul>     
+                      </ul>
                     </div>
                   </div>
                 </div>
