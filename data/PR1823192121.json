@@ -1,0 +1,21 @@
+[
+   {
+      "id": "82fd537a-d135-4c37-963b-65ba08efaa0c",
+      "aset_id": "aeaaadc0-dbcd-4b6f-94a1-bcd2e7652bc4",
+      "nama_aset": "Proyektor Epson TW6250 EH-TW6250 4K Enhancement",
+      "kode_aset": "PR1823192121",
+      "bidang_id": "0af9a7e3-414d-11ee-b93c-244bfebc253d",
+      "nama_bidang": "SEKERTARIAT",
+      "pegawai_id": "159f07b9-0749-484e-bc96-f6ddbd5e3995",
+      "nama_pegawai": "YULI HARTINI",
+      "nip_pegawai": {
+         "String": "196408021991031007",
+         "Valid": true
+      },
+      "tanggal_Aksi": "2024-08-08T00:00:00Z",
+      "jenis_aksi": "Pemberian",
+      "keterangan": "\u003cp\u003easdasd\u003c/p\u003e",
+      "Created_At": "2024-08-22T11:28:47.9014297+08:00",
+      "Updated_At": "2024-08-22T11:28:47.9014297+08:00"
+   }
+]

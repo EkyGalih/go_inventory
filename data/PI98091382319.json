@@ -1,0 +1,40 @@
+[
+   {
+      "id": "71c814fa-6b16-4e59-9e0d-c800c9691855",
+      "aset_id": "c59a77a7-4c61-49d2-b2bb-f9e2f0ce39e7",
+      "nama_aset": "Printer Inkjet L4260",
+      "kode_aset": "PI98091382319",
+      "bidang_id": "f60b5439-5d63-4c1e-8f28-9e4940619244",
+      "nama_bidang": "Keuangan - (SEKERTARIAT)",
+      "pegawai_id": "04adc547-a833-4204-9eeb-53e726defe92",
+      "nama_pegawai": "WARNI JUITA, SE",
+      "nip_pegawai": {
+         "String": "198212312008012021",
+         "Valid": true
+      },
+      "tanggal_Aksi": "2024-08-21T00:00:00Z",
+      "jenis_aksi": "Pemberian",
+      "keterangan": "\u003cp\u003easdasdasdasda\u003c/p\u003e",
+      "Created_At": "2024-08-22T10:38:59.8928112+08:00",
+      "Updated_At": "2024-08-22T10:38:59.8928112+08:00"
+   },
+   {
+      "id": "06fb12fb-06a1-4853-b47e-369a51fa16d0",
+      "aset_id": "c59a77a7-4c61-49d2-b2bb-f9e2f0ce39e7",
+      "nama_aset": "Printer Inkjet L4260",
+      "kode_aset": "PI98091382319",
+      "bidang_id": "f60b5439-5d63-4c1e-8f28-9e4940619244",
+      "nama_bidang": "Keuangan - (SEKERTARIAT)",
+      "pegawai_id": "044dede6-7d8e-40a0-b456-ad630f0b700f",
+      "nama_pegawai": "HAERUL FACHRI",
+      "nip_pegawai": {
+         "String": "198504162010011002",
+         "Valid": true
+      },
+      "tanggal_Aksi": "2024-08-22T00:00:00Z",
+      "jenis_aksi": "Pemberian",
+      "keterangan": "\u003cp\u003esadsdasdasdasda\u003c/p\u003e",
+      "Created_At": "2024-08-22T10:39:30.6756456+08:00",
+      "Updated_At": "2024-08-22T10:39:30.6756456+08:00"
+   }
+]

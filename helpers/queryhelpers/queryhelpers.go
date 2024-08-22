@@ -23,6 +23,20 @@ func GetDistribusi(aset_tiks []entities.AsetTik) map[string]int {
 	return distribusi
 }
 
+func GetAset(aset_tiks []entities.AsetTik) map[string]string {
+	asets := make(map[string]string)
+	for _, item := range aset_tiks {
+		var data string
+		err := config.DB.QueryRow("SELECT * FROM aset_tik WHERE kode_aset = ?", item.Kode_Aset).Scan(&data)
+		if err != nil {
+			continue
+		}
+		asets[item.Kode_Aset] = data
+	}
+
+	return asets
+}
+
 func CountAsetPegawai(lokasiaset []entities.LokasiAset) map[string]int {
 	asetPegawais := make(map[string]int)
 	for _, aset := range lokasiaset {
