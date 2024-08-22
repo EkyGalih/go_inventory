@@ -1,6 +1,7 @@
 package lokasiasetcontroller
 
 import (
+	"encoding/json"
 	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
@@ -10,7 +11,11 @@ import (
 	"inventaris/models/lokasiasetmodel"
 	"inventaris/models/pegawaimodel"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -62,27 +67,106 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		var lokasiaset entities.LokasiAset
 
+		aset_id := r.FormValue("aset_id")
+		bidang_id := r.FormValue("bidang_id")
+		pegawai_id := r.FormValue("pegawai_id")
+
+		aset, err := asettikmodel.Detail(aset_id)
+		if err != nil {
+			http.Error(w, "failed to get detail aset : "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		bidang, err := bidangmodel.Detail(bidang_id)
+		if err != nil {
+			http.Error(w, "failed to get detail bidang : "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		pegawai, err := pegawaimodel.Detail(pegawai_id)
+		if err != nil {
+			http.Error(w, "failed to get detail pegawai : "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		lokasiaset.Aset_id = r.FormValue("aset_id")
 		lokasiaset.Bidang_id = r.FormValue("bidang_id")
 		lokasiaset.Pegawai_id = r.FormValue("pegawai_id")
-		lokasiaset.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
+		tanggalPerolehan, err := time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
+		if err != nil {
+			http.Error(w, "Invalid date format for Tanggal Perolehan", http.StatusBadRequest)
+			return
+		}
+		lokasiaset.Tanggal_Perolehan = tanggalPerolehan
+		var tanggalSelesai *time.Time
 		tglSelesaiStr := r.FormValue("tanggal_selesai")
 		if tglSelesaiStr != "" {
-			tgl_selesai, err := time.Parse("2006-01-02", tglSelesaiStr)
+			tglSelesai, err := time.Parse("2006-01-02", tglSelesaiStr)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, "Invalid date format for Tanggal Selesai", http.StatusBadRequest)
 				return
 			}
-			lokasiaset.Tanggal_Selesai = &tgl_selesai
-		} else {
-			lokasiaset.Tanggal_Selesai = nil
+			tanggalSelesai = &tglSelesai
 		}
+		lokasiaset.Tanggal_Selesai = tanggalSelesai
 		jenis_pemanfaatan := r.FormValue("jenis_pemanfaatan")
 		lokasiaset.Jenis_Pemanfaatan = &jenis_pemanfaatan
 		keterangan := r.FormValue("keterangan")
 		lokasiaset.Keterangan = &keterangan
 		lokasiaset.Created_At = time.Now()
 		lokasiaset.Updated_At = time.Now()
+
+		data := entities.Riwayat{
+			Id:           uuid.New().String(),
+			Aset_id:      aset.Id,
+			Nama_Aset:    aset.Nama_Aset,
+			Kode_Aset:    aset.Kode_Aset,
+			Bidang_id:    bidang.Id,
+			Nama_Bidang:  bidang.Nama_Bidang,
+			Pegawai_id:   pegawai.Id,
+			Nama_Pegawai: pegawai.Name,
+			Nip_Pegawai:  pegawai.Nip,
+			Tanggal_Aksi: tanggalPerolehan,
+			Jenis_Aksi:   "Pemberian",
+			Keterangan:   &keterangan,
+			Created_At:   time.Now(),
+			Updated_At:   time.Now(),
+		}
+
+		var existingData []entities.Riwayat
+		path := "./data/"
+		jsonName := aset.Kode_Aset + ".json"
+		jsonFile := filepath.Join(path, jsonName)
+
+		// Membaca data JSON yang ada
+		if _, err := os.Stat(jsonFile); !os.IsNotExist(err) {
+			file, err := os.ReadFile(jsonFile)
+			if err != nil {
+				http.Error(w, "Failed to read existing JSON file : "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			err = json.Unmarshal(file, &existingData)
+			if err != nil {
+				http.Error(w, "Failed to parse existing JSON data : "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		// Menambahkan data baru ke array
+		existingData = append(existingData, data)
+
+		jsonData, err := json.MarshalIndent(existingData, "", "   ")
+		if err != nil {
+			http.Error(w, "Failed to Marshal data json :"+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = os.WriteFile(jsonFile, jsonData, 0644)
+		if err != nil {
+			http.Error(w, "Failed to write JSON to file", http.StatusInternalServerError)
+			return
+		}
 
 		success, err := lokasiasetmodel.Create(lokasiaset)
 		if err != nil {
