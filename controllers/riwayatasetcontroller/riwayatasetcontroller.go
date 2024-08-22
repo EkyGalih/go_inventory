@@ -2,6 +2,7 @@ package riwayatasetcontroller
 
 import (
 	"fmt"
+	"inventaris/entities"
 	"inventaris/helpers/helpers"
 	"inventaris/helpers/queryhelpers"
 	"io/ioutil"
@@ -26,7 +27,12 @@ func Index(w http.ResponseWriter, r *http.Request) {
         }
     }
 
-	data_aset := queryhelpers.GetAset(fileNames)
+	var asetTikList []entities.AsetTik
+	for _, kode := range fileNames {
+		asetTikList = append(asetTikList, entities.AsetTik{Kode_Aset: kode})
+	}
+
+	data_aset := queryhelpers.GetAset(asetTikList)
 
 	fmt.Println(data_aset)
 

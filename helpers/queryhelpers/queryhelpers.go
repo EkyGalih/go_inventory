@@ -23,11 +23,11 @@ func GetDistribusi(aset_tiks []entities.AsetTik) map[string]int {
 	return distribusi
 }
 
-func GetAset(aset_tiks []entities.AsetTik) map[string]string {
-	asets := make(map[string]string)
+func GetAset(aset_tiks []entities.AsetTik) map[string]entities.AsetTik {
+	asets := make(map[string]entities.AsetTik)
 	for _, item := range aset_tiks {
-		var data string
-		err := config.DB.QueryRow("SELECT * FROM aset_tik WHERE kode_aset = ?", item.Kode_Aset).Scan(&data)
+		var aset entities.AsetTik
+		err := config.DB.QueryRow("SELECT id, nama_aset, kode_aset, path FROM aset_tik WHERE kode_aset = ?", item.Kode_Aset).Scan(&data)
 		if err != nil {
 			continue
 		}
