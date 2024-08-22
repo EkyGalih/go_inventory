@@ -1,7 +1,6 @@
 package riwayatasetcontroller
 
 import (
-	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
 	"inventaris/helpers/queryhelpers"
@@ -32,9 +31,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		asetTikList = append(asetTikList, entities.AsetTik{Kode_Aset: kode})
 	}
 
-	data_aset := queryhelpers.GetAset(asetTikList)
-
-	fmt.Println(data_aset)
+	dataAset := queryhelpers.GetAset(asetTikList)
 
 	path := map[string]string{
 		"menu": "riwayat-aset",
@@ -43,7 +40,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	data := map[string]any{
 		"Title": "Riwayat Aset",
 		"path":  path,
-		"files": fileNames,
+		"dataAset": dataAset,
 	}
 
 	helpers.RenderTemplate(w, "riwayataset/index.html", data)
