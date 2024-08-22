@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `aset_tik` (
   KEY `tipe_id` (`tipe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table web_bpkad.aset_tik: ~13 rows (approximately)
+-- Dumping data for table web_bpkad.aset_tik: ~12 rows (approximately)
 DELETE FROM `aset_tik`;
 INSERT INTO `aset_tik` (`id`, `jenis_aset`, `kode_aset`, `nama_aset`, `merek`, `model`, `serial_number`, `deskripsi`, `kategori_id`, `tipe_id`, `tanggal_perolehan`, `status`, `nilai`, `jumlah`, `keterangan`, `path`, `gambar`, `satuan`, `created_at`, `updated_at`) VALUES
 	('13a0c180-5ed0-492a-a84a-778ecc2c4c4f', 'Habis Pakai', '6712631767123', 'Tinta Epson 003 Black', 'Epson', 'EcoTank', '2137816237818', '<p>tinta printer epson l3210</p>', 'b271d259-68aa-44db-9334-6e04ce688628', 'dd309d3c-fa7f-4b39-8434-44819598ccf7', '2024-08-12', 'Baru', 159000, 50, '<p>tersasdasds</p>', '/public/uploads/aset/habispakai/BiYxNxyv3LhCevDUyBe4HbxdZstNwr.jpg', 'BiYxNxyv3LhCevDUyBe4HbxdZstNwr.jpg', 'Buah', '2024-08-14 05:04:23', '2024-08-14 05:04:23'),
@@ -83,14 +83,14 @@ INSERT INTO `kategori_aset` (`id`, `nama_kategori`, `deskripsi`, `created_at`, `
 
 -- Dumping structure for table web_bpkad.lokasi_aset
 CREATE TABLE IF NOT EXISTS `lokasi_aset` (
-  `id` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `aset_id` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bidang_id` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pegawai_id` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `aset_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bidang_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pegawai_id` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tanggal_perolehan` date DEFAULT NULL,
   `tanggal_selesai` date DEFAULT NULL,
   `jenis_pemanfaatan` enum('Habis Pakai','Tetap') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'Tetap',
-  `keterangan` text COLLATE utf8mb4_unicode_ci,
+  `keterangan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -99,15 +99,15 @@ CREATE TABLE IF NOT EXISTS `lokasi_aset` (
   KEY `pegawai_id` (`pegawai_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table web_bpkad.lokasi_aset: ~5 rows (approximately)
+-- Dumping data for table web_bpkad.lokasi_aset: ~6 rows (approximately)
 DELETE FROM `lokasi_aset`;
 INSERT INTO `lokasi_aset` (`id`, `aset_id`, `bidang_id`, `pegawai_id`, `tanggal_perolehan`, `tanggal_selesai`, `jenis_pemanfaatan`, `keterangan`, `created_at`, `updated_at`) VALUES
-	('36cd95f3-8e1c-44f6-b10c-7f9fdaade82e', 'c59a77a7-4c61-49d2-b2bb-f9e2f0ce39e7', '79530810-bc72-4bcd-9d45-a9180151abf6', '8cdb1897-69db-46e3-a6a8-fa6d5417c710', '2023-11-20', NULL, 'Tetap', '<p>barang sudah di kasi</p>', '2024-07-30 06:49:04', '2024-07-30 06:49:04'),
-	('41fa9411-e7a9-4106-99aa-79f1955a87ad', '22c9bddd-95fe-4829-a51c-2dc8ba7040c5', '79530810-bc72-4bcd-9d45-a9180151abf6', '8cdb1897-69db-46e3-a6a8-fa6d5417c710', '2023-11-20', NULL, 'Tetap', '<p>barang sudah diberikan</p>', '2024-07-30 05:14:54', '2024-07-30 05:14:54'),
-	('4b10fb15-0aa4-4045-94a8-924d3eaa7dbd', '22c9bddd-95fe-4829-a51c-2dc8ba7040c5', '79530810-bc72-4bcd-9d45-a9180151abf6', '8cdb1897-69db-46e3-a6a8-fa6d5417c710', '2023-11-20', NULL, 'Tetap', '<p>barang sudah diberikan</p>', '2024-07-30 05:15:44', '2024-07-30 05:15:44'),
-	('6a64a1f7-41f1-4127-8e79-7e85e31b7cee', 'c59a77a7-4c61-49d2-b2bb-f9e2f0ce39e7', 'f60b5439-5d63-4c1e-8f28-9e4940619244', '04adc547-a833-4204-9eeb-53e726defe92', '2023-06-13', NULL, 'Tetap', '<p>printer ini adalah printer baru, dan akan diberikan ke pada keuangan</p>', '2024-08-18 07:07:56', '2024-08-18 07:07:56'),
-	('9ecff80f-bda8-4cc2-96ed-e75dd2ca26f5', '556158cd-9513-4c45-807b-bb2aaf7d2a93', 'e2c0325b-1ecb-453d-992a-37ddfeaff82d', '435c4114-496f-4c70-9892-d9a5a4a909c1', '2023-11-20', NULL, 'Tetap', '<p>barang sudah diberikan ke yang bersangkutan</p>', '2024-07-30 05:59:10', '2024-07-30 05:59:10'),
-	('c80a6202-6935-4eba-86da-e222c5456d78', '4dd71063-cc2c-4edb-8360-62bae1e2fc59', 'e2c0325b-1ecb-453d-992a-37ddfeaff82d', '435c4114-496f-4c70-9892-d9a5a4a909c1', '2020-11-20', NULL, 'Tetap', '<p>barang sudah diberikan</p>', '2024-07-30 06:31:01', '2024-07-30 06:31:01');
+	('36cd95f3-8e1c-44f6-b10c-7f9fdaade82e', 'c59a77a7-4c61-49d2-b2bb-f9e2f0ce39e7', '79530810-bc72-4bcd-9d45-a9180151abf6', '8cdb1897-69db-46e3-a6a8-fa6d5417c710', '2023-11-20', NULL, 'Tetap', '<p>barang sudah di kasi</p>', '2024-07-29 22:49:04', '2024-07-29 22:49:04'),
+	('41fa9411-e7a9-4106-99aa-79f1955a87ad', '22c9bddd-95fe-4829-a51c-2dc8ba7040c5', '79530810-bc72-4bcd-9d45-a9180151abf6', '8cdb1897-69db-46e3-a6a8-fa6d5417c710', '2023-11-20', NULL, 'Tetap', '<p>barang sudah diberikan</p>', '2024-07-29 21:14:54', '2024-07-29 21:14:54'),
+	('4b10fb15-0aa4-4045-94a8-924d3eaa7dbd', '22c9bddd-95fe-4829-a51c-2dc8ba7040c5', '79530810-bc72-4bcd-9d45-a9180151abf6', '8cdb1897-69db-46e3-a6a8-fa6d5417c710', '2023-11-20', NULL, 'Tetap', '<p>barang sudah diberikan</p>', '2024-07-29 21:15:44', '2024-07-29 21:15:44'),
+	('6a64a1f7-41f1-4127-8e79-7e85e31b7cee', 'c59a77a7-4c61-49d2-b2bb-f9e2f0ce39e7', 'f60b5439-5d63-4c1e-8f28-9e4940619244', '04adc547-a833-4204-9eeb-53e726defe92', '2023-06-13', NULL, 'Tetap', '<p>printer ini adalah printer baru, dan akan diberikan ke pada keuangan</p>', '2024-08-17 23:07:56', '2024-08-17 23:07:56'),
+	('9ecff80f-bda8-4cc2-96ed-e75dd2ca26f5', '556158cd-9513-4c45-807b-bb2aaf7d2a93', 'e2c0325b-1ecb-453d-992a-37ddfeaff82d', '435c4114-496f-4c70-9892-d9a5a4a909c1', '2023-11-20', NULL, 'Tetap', '<p>barang sudah diberikan ke yang bersangkutan</p>', '2024-07-29 21:59:10', '2024-07-29 21:59:10'),
+	('c80a6202-6935-4eba-86da-e222c5456d78', '4dd71063-cc2c-4edb-8360-62bae1e2fc59', 'e2c0325b-1ecb-453d-992a-37ddfeaff82d', '435c4114-496f-4c70-9892-d9a5a4a909c1', '2020-11-20', NULL, 'Tetap', '<p>barang sudah diberikan</p>', '2024-07-29 22:31:01', '2024-07-29 22:31:01');
 
 -- Dumping structure for table web_bpkad.pemeliharaan_aset
 CREATE TABLE IF NOT EXISTS `pemeliharaan_aset` (
