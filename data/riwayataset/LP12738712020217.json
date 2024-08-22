@@ -1,0 +1,25 @@
+[
+   {
+      "id": "d1662de3-c13a-46e1-8365-83d0d71d70f2",
+      "aset_id": "4dd71063-cc2c-4edb-8360-62bae1e2fc59",
+      "nama_aset": "Laptop ROG G-Strix",
+      "kode_aset": "LP12738712020217",
+      "bidang_id": "1f30e9ae-9f1a-4026-86d7-9384ae70241b",
+      "nama_bidang": "TU - (SEKERTARIAT)",
+      "pegawai_id": "0282d54a-de97-4adf-8a6a-32ef4d0aaae3",
+      "nama_pegawai": "L. RESTU ATMULYADI, S.Sos",
+      "foto_pegawai": {
+         "String": "",
+         "Valid": false
+      },
+      "nip_pegawai": {
+         "String": "197407142009011001",
+         "Valid": true
+      },
+      "tanggal_Aksi": "2022-06-16T00:00:00Z",
+      "jenis_aksi": "Penerimaan Aset",
+      "keterangan": "\u003cp\u003epengembalian laptop rog\u003c/p\u003e",
+      "Created_At": "2024-08-22T23:15:51.6831875+08:00",
+      "Updated_At": "2024-08-22T23:15:51.6831875+08:00"
+   }
+]

@@ -14,6 +14,7 @@ type Riwayat struct {
 	Nama_Bidang  string         `json:"nama_bidang"`
 	Pegawai_id   string         `json:"pegawai_id"`
 	Nama_Pegawai string         `json:"nama_pegawai"`
+	Foto_Pegawai sql.NullString `json:"foto_pegawai"`
 	Nip_Pegawai  sql.NullString `json:"nip_pegawai"`
 	Tanggal_Aksi time.Time      `json:"tanggal_Aksi"`
 	Jenis_Aksi   string         `json:"jenis_aksi"`

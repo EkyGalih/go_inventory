@@ -88,7 +88,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "failed to get detail pegawai : "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		fmt.Println(r.FormValue("jenis_pemanfaatan"))
 		lokasiaset.Aset_id = r.FormValue("aset_id")
 		lokasiaset.Bidang_id = r.FormValue("bidang_id")
 		lokasiaset.Pegawai_id = r.FormValue("pegawai_id")
@@ -125,16 +125,17 @@ func Add(w http.ResponseWriter, r *http.Request) {
 			Nama_Bidang:  bidang.Nama_Bidang,
 			Pegawai_id:   pegawai.Id,
 			Nama_Pegawai: pegawai.Name,
+			Foto_Pegawai: pegawai.Foto,
 			Nip_Pegawai:  pegawai.Nip,
 			Tanggal_Aksi: tanggalPerolehan,
-			Jenis_Aksi:   "Pemberian",
+			Jenis_Aksi:   "Penerimaan Aset",
 			Keterangan:   &keterangan,
 			Created_At:   time.Now(),
 			Updated_At:   time.Now(),
 		}
 
 		var existingData []entities.Riwayat
-		path := "./data/"
+		path := "./data/riwayataset"
 		jsonName := aset.Kode_Aset + ".json"
 		jsonFile := filepath.Join(path, jsonName)
 

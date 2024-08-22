@@ -63,6 +63,7 @@ func main() {
 
 	// 7. Riwayat Aset
 	http.HandleFunc("/riwayat-aset", riwayatasetcontroller.Index)
+	http.HandleFunc("/riwayat-aset/logs", riwayatasetcontroller.Show)
 
 	log.Println("Server running on port 8080")
 	http.ListenAndServe(":8080", nil)
