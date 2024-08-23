@@ -147,7 +147,7 @@
                                   <option></option>
                                   {{ range .aset }}
                                   <option value="{{ .Id }}">
-                                    {{ .Nama_Aset }}
+                                    {{ .Nama_Aset }} - ({{.Sisa_Aset}} {{ if .Satuan }}{{ .Satuan }}{{ else }}N/A{{ end }})
                                   </option>
                                   {{ end }}
                                 </select>

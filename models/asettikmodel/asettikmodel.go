@@ -34,6 +34,50 @@ func GetAll() []entities.AsetTik {
 	return aset_tiks
 }
 
+func GetDataAset() []entities.AsetTik {
+	rows, err := config.DB.Query(`
+	SELECT 
+    	aset_tik.id,
+		aset_tik.kode_aset,
+        aset_tik.nama_aset,
+		aset_tik.jumlah - IFNULL(lokasi.jumlah_lokasi, 0) AS sisa_aset,
+		aset_tik.satuan
+	FROM 
+    	aset_tik
+	LEFT JOIN 
+		(SELECT 
+			aset_id, COUNT(*) AS jumlah_lokasi 
+		FROM 
+			lokasi_aset 
+		GROUP BY 
+			aset_id) AS lokasi 
+	ON 
+    	aset_tik.id = lokasi.aset_id
+	WHERE 
+		aset_tik.jenis_aset = 'Tetap'
+		AND (lokasi.jumlah_lokasi IS NULL OR lokasi.jumlah_lokasi <> aset_tik.jumlah)
+	ORDER BY 
+    	aset_tik.updated_at DESC
+	`)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+
+	var aset_tiks []entities.AsetTik
+
+	for rows.Next() {
+		var aset_tik entities.AsetTik
+		if err := rows.Scan(&aset_tik.Id, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Sisa_Aset, &aset_tik.Satuan); err != nil {
+			panic(err.Error())
+		}
+
+		aset_tiks = append(aset_tiks, aset_tik)
+	}
+
+	return aset_tiks
+}
+
 func GetPaginate(page, limit int) ([]entities.AsetTik, error) {
 	offset := (page - 1) * limit
 	query := `SELECT * FROM aset_tik WHERE jenis_aset = 'Tetap' ORDER BY updated_at DESC LIMIT ? OFFSET ?`

@@ -2,7 +2,6 @@ package lokasiasetcontroller
 
 import (
 	"encoding/json"
-	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
 	"inventaris/helpers/queryhelpers"
@@ -47,7 +46,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func Add(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		aset := asettikmodel.GetAll()
+		aset := asettikmodel.GetDataAset()
 		bidang := bidangmodel.GetAll()
 		pegawai := pegawaimodel.GetALl()
 
@@ -88,7 +87,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "failed to get detail pegawai : "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(r.FormValue("jenis_pemanfaatan"))
+		
 		lokasiaset.Aset_id = r.FormValue("aset_id")
 		lokasiaset.Bidang_id = r.FormValue("bidang_id")
 		lokasiaset.Pegawai_id = r.FormValue("pegawai_id")
@@ -225,7 +224,6 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Parameter id tidak ditemukan", http.StatusBadRequest)
 			return
 		}
-		fmt.Println(r.FormValue("jenis_pemanfaatan"))
 		var lokasiaset entities.LokasiAset
 		lokasiaset.Aset_id = r.FormValue("aset_id")
 		lokasiaset.Bidang_id = r.FormValue("bidang_id")

@@ -19,10 +19,10 @@
     class="app-default"
   >
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
-      <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+      <div class="app-page flex-column flex-column-xxl" id="kt_app_page">
         {{ template "_navbar.html" . }}
 
-        <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+        <div class="app-wrapper flex-column flex-row-xxl" id="kt_app_wrapper">
           <div
             id="kt_app_sidebar"
             class="app-sidebar flex-column"
@@ -85,12 +85,12 @@
             </div>
           </div>
 
-          <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-            <div class="d-flex flex-column flex-column-fluid">
+          <div class="app-main flex-column flex-row-xxl" id="kt_app_main">
+            <div class="d-flex flex-column flex-column-xxl">
               <div id="kt_app_toolbar" class="app-toolbar py-3 py-lg-6">
                 <div
                   id="kt_app_toolbar_container"
-                  class="app-container container-fluid d-flex flex-stack"
+                  class="app-container container-xxl d-flex flex-stack"
                 >
                   <div
                     class="page-title d-flex flex-column justify-content-center flex-wrap me-3"
@@ -139,7 +139,7 @@
                 </div>
               </div>
 
-              <div id="kt_app_content" class="app-content flex-column-fluid">
+              <div id="kt_app_content" class="app-content flex-column-xxl">
                 <div
                   id="kt_app_content_container"
                   class="app-container container-xxl"
@@ -314,13 +314,12 @@
                             class="btn btn-sm btn-light-primary btn-flex btn-center"
                             data-kt-follow-btn="true"
                           >
-                            <i class="ki-duotone ki-check following fs-3"></i>
-                            <i
-                              class="ki-duotone ki-plus follow fs-3 d-none"
-                            ></i>
+                            <i class="ki-duotone ki-arrows-loop fs-3">
+                              <span class="path1"></span>
+                              <span class="path2"></span>
+                            </i>
                             <span class="indicator-label"
-                              >Jenis Pemanfaatan : Aset
-                              {{.Jenis_Pemanfaatan}}</span
+                              >Pindah Aset</span
                             >
                           </button>
                         </div>

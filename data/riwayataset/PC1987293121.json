@@ -1,0 +1,48 @@
+[
+   {
+      "id": "d145fca7-0bdd-4f1d-8bd5-1d1f51394526",
+      "aset_id": "22c9bddd-95fe-4829-a51c-2dc8ba7040c5",
+      "nama_aset": "PC AIO AMD Ryzen 5",
+      "kode_aset": "PC1987293121",
+      "bidang_id": "988226b4-0cd4-4547-a218-25dd9c436520",
+      "nama_bidang": "Program - (SEKERTARIAT)",
+      "pegawai_id": "984e03c1-a5b5-468d-8d52-7aa3a1c23ee2",
+      "nama_pegawai": "YUL HADIANSYAH, SE, MM",
+      "foto_pegawai": {
+         "String": "845bda781462599e9e403b5a3caa6fca.jpg",
+         "Valid": true
+      },
+      "nip_pegawai": {
+         "String": "198103152006041013",
+         "Valid": true
+      },
+      "tanggal_Aksi": "2023-07-12T00:00:00Z",
+      "jenis_aksi": "Penerimaan Aset",
+      "keterangan": "\u003cp\u003easet sudah diberikan ke pak yul hadiansyah\u003c/p\u003e",
+      "Created_At": "2024-08-23T10:05:01.3301251+08:00",
+      "Updated_At": "2024-08-23T10:05:01.3301251+08:00"
+   },
+   {
+      "id": "d145fca7-0bdd-4f1d-8bd5-1d1f51394526",
+      "aset_id": "22c9bddd-95fe-4829-a51c-2dc8ba7040c5",
+      "nama_aset": "PC AIO AMD Ryzen 5",
+      "kode_aset": "PC1987293121",
+      "bidang_id": "988226b4-0cd4-4547-a218-25dd9c436520",
+      "nama_bidang": "Program - (SEKERTARIAT)",
+      "pegawai_id": "984e03c1-a5b5-468d-8d52-7aa3a1c23ee2",
+      "nama_pegawai": "YUL HADIANSYAH, SE, MM",
+      "foto_pegawai": {
+         "String": "845bda781462599e9e403b5a3caa6fca.jpg",
+         "Valid": true
+      },
+      "nip_pegawai": {
+         "String": "198103152006041013",
+         "Valid": true
+      },
+      "tanggal_Aksi": "2024-07-12T00:00:00Z",
+      "jenis_aksi": "Pengembalian Aset",
+      "keterangan": "\u003cp\u003easet sudah diberikan ke pak yul hadiansyah\u003c/p\u003e",
+      "Created_At": "2024-08-23T10:05:01.3301251+08:00",
+      "Updated_At": "2024-08-23T10:05:01.3301251+08:00"
+   }
+]

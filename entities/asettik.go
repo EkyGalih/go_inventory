@@ -9,6 +9,7 @@ type AsetTik struct {
 	Jenis_Aset        string `gorm:"type:ENUM('Tetap','Habis Pakai');DEFAULT:'Tetap'"`
 	Kode_Aset         string
 	Nama_Aset         string
+	Sisa_Aset         int
 	Merek             string
 	Model             string
 	Serial_Number     string

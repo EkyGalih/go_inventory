@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -69,7 +70,15 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var riwayat []entities.Riwayat
-	json.Unmarshal(jsonEncode, &riwayat)
+	err = json.Unmarshal(jsonEncode, &riwayat)
+	if err != nil {
+		http.Error(w, "Failed to parse JSON: "+ err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	sort.Slice(riwayat, func(i, j int) bool {
+		return riwayat[i].Tanggal_Aksi.After(riwayat[j].Tanggal_Aksi)
+	})
 
 	path := map[string]string{
 		"menu": "riwayat-aset",
