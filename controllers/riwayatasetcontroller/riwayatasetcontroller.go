@@ -5,6 +5,7 @@ import (
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
 	"inventaris/helpers/queryhelpers"
+	"inventaris/models/asettikmodel"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -72,7 +73,7 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	var riwayat []entities.Riwayat
 	err = json.Unmarshal(jsonEncode, &riwayat)
 	if err != nil {
-		http.Error(w, "Failed to parse JSON: "+ err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to parse JSON: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -80,13 +81,20 @@ func Show(w http.ResponseWriter, r *http.Request) {
 		return riwayat[i].Tanggal_Aksi.After(riwayat[j].Tanggal_Aksi)
 	})
 
+	aset, err := asettikmodel.GetAsetByKode(kodeAset)
+	if err != nil {
+		http.Error(w, "Failed to get aset: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	path := map[string]string{
 		"menu": "riwayat-aset",
 	}
-	
+
 	data := map[string]any{
-		"Title": "Riwayat Aset",
-		"path":  path,
+		"Title":   "Riwayat Aset",
+		"path":    path,
+		"aset":    aset,
 		"riwayat": riwayat,
 	}
 

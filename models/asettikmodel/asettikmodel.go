@@ -177,9 +177,23 @@ func Detail(id string) (entities.AsetTik, error) {
 	var aset_tik entities.AsetTik
 	if err := row.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tipe_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Satuan, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
 		if err == sql.ErrNoRows {
-			return aset_tik, fmt.Errorf("no category found with id %s", id)
+			return aset_tik, fmt.Errorf("no aset tik found with id %s", id)
 		}
-		return aset_tik, fmt.Errorf("failed to retrieve category: %w", err)
+		return aset_tik, fmt.Errorf("failed to retrieve aset tik: %w", err)
+	}
+
+	return aset_tik, nil
+}
+
+func GetAsetByKode(kode_aset string) (entities.AsetTik, error) {
+	row := config.DB.QueryRow(`SELECT * FROM aset_tik WHERE jenis_aset = 'Tetap' AND kode_aset = ?`, kode_aset)
+
+	var aset_tik entities.AsetTik
+	if err := row.Scan(&aset_tik.Id, &aset_tik.Jenis_Aset, &aset_tik.Kode_Aset, &aset_tik.Nama_Aset, &aset_tik.Merek, &aset_tik.Model, &aset_tik.Serial_Number, &aset_tik.Deskripsi, &aset_tik.Kategori_id, &aset_tik.Tipe_id, &aset_tik.Tanggal_Perolehan, &aset_tik.Status, &aset_tik.Nilai, &aset_tik.Jumlah, &aset_tik.Keterangan, &aset_tik.Path, &aset_tik.Gambar, &aset_tik.Satuan, &aset_tik.Created_At, &aset_tik.Updated_At); err != nil {
+		if err == sql.ErrNoRows {
+			return aset_tik, fmt.Errorf("no aset tik found with id %s", kode_aset)
+		}
+		return aset_tik, fmt.Errorf("failed to retrieve aset tik: %w", err)
 	}
 
 	return aset_tik, nil
