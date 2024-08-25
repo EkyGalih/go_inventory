@@ -4,6 +4,7 @@ import (
 	"inventaris/config"
 	"inventaris/controllers/asethabispakaicontroller"
 	"inventaris/controllers/asettikcontroller"
+	"inventaris/controllers/authcontroller"
 	"inventaris/controllers/categorycontroller"
 	"inventaris/controllers/homecontroller"
 	"inventaris/controllers/lokasiasetcontroller"
@@ -20,6 +21,9 @@ func main() {
 	// serve static file from public folder
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/public/", http.StripPrefix("/public/", fs))
+
+	// login
+	http.HandleFunc("/login", authcontroller.Index)
 
 	// 1. Homepage
 	http.HandleFunc("/", homecontroller.Welcome)
