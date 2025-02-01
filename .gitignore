@@ -1,4 +1,8 @@
 /config
 /public/uploads/
+/tmp
+/data
+.air.toml
+config.json
 inventaris.exe
 inventaris.exe~
