@@ -2,27 +2,30 @@ package entities
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type AsetTik struct {
-	Id                string `gorm:"primaryKey"`
-	Jenis_Aset        string `gorm:"type:ENUM('Tetap','Habis Pakai');DEFAULT:'Tetap'"`
-	Kode_Aset         string
-	Nama_Aset         string
-	Merek             string
-	Model             string
-	Serial_Number     string
-	Deskripsi         *string `gorm:"type:text"`
-	Kategori_id       string  `gorm:"index"`
-	Tipe_id           string  `gorm:"index"`
-	Tanggal_Perolehan time.Time
-	Status            string `gorm:"type:ENUM('Baru', 'Baik', 'Rusak','Hilang','Perbaikan');DEFAULT:'Baru'"`
-	Jumlah            float64
-	Nilai             float64
-	Keterangan        *string `gorm:"type:text"`
-	Path              *string `gorm:"type:text"`
-	Gambar            *string `gorm:"type:text"`
-	Satuan            *string `gorm:"type:text"`
-	Created_At        time.Time
-	Updated_At        time.Time
+	ID               string         `gorm:"type:char(36);primaryKey"`
+	JenisAset        string         `gorm:"type:varchar(255)"`
+	KodeAset         string         `gorm:"type:varchar(255);unique"`
+	NamaAset         string         `gorm:"type:varchar(255)"`
+	Merek            string         `gorm:"type:varchar(255)"`
+	Model            string         `gorm:"type:varchar(255)"`
+	SerialNumber     string         `gorm:"type:varchar(255)"`
+	Deskripsi        string         `gorm:"type:text"`
+	KategoriID       string         `gorm:"type:char(36);index"`
+	TipeID           string         `gorm:"type:char(36);index"`
+	TanggalPerolehan time.Time      `gorm:"type:date"`
+	Status           string         `gorm:"type:varchar(255)"`
+	Nilai            float64        `gorm:"type:decimal(15,2)"`
+	Jumlah           int            `gorm:"type:int"`
+	Keterangan       string         `gorm:"type:text"`
+	Path             string         `gorm:"type:text"`
+	Gambar           string         `gorm:"type:text"`
+	Satuan           string         `gorm:"type:varchar(255)"`
+	CreatedAt        time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt        time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
 }

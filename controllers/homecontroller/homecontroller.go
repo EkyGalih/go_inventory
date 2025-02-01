@@ -2,10 +2,11 @@ package homecontroller
 
 import (
 	"inventaris/helpers/helpers"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func Welcome(w http.ResponseWriter, r *http.Request) {
+func Welcome(c *gin.Context) {
 	path := map[string]string{
 		"menu": "dashboard",
 	}
@@ -13,5 +14,5 @@ func Welcome(w http.ResponseWriter, r *http.Request) {
 		"Title": "Dashboard",
 		"path":  path,
 	}
-	helpers.RenderTemplate(w, "home/index.html", data)
+	helpers.RenderTemplate(c, "/home/index.html", data)
 }

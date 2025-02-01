@@ -3,22 +3,25 @@ package entities
 import (
 	"database/sql"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Riwayat struct {
-	Id           string         `json:"id"`
-	Aset_id      string         `json:"aset_id"`
-	Nama_Aset    string         `json:"nama_aset"`
-	Kode_Aset    string         `json:"kode_aset"`
-	Bidang_id    string         `json:"bidang_id"`
-	Nama_Bidang  string         `json:"nama_bidang"`
-	Pegawai_id   string         `json:"pegawai_id"`
-	Nama_Pegawai string         `json:"nama_pegawai"`
-	Foto_Pegawai sql.NullString `json:"foto_pegawai"`
-	Nip_Pegawai  sql.NullString `json:"nip_pegawai"`
-	Tanggal_Aksi time.Time      `json:"tanggal_Aksi"`
-	Jenis_Aksi   string         `json:"jenis_aksi"`
+	ID           string         `gorm:"primaryKey" json:"id"`
+	AsetID       string         `json:"aset_id"`
+	NamaAset     string         `json:"nama_aset"`
+	KodeAset     string         `json:"kode_aset"`
+	BidangID     string         `json:"bidang_id"`
+	NamaBidang   string         `json:"nama_bidang"`
+	PegawaiID    string         `json:"pegawai_id"`
+	NamaPegawai  string         `json:"nama_pegawai"`
+	FotoPegawai  sql.NullString `json:"foto_pegawai"`
+	NipPegawai   sql.NullString `json:"nip_pegawai"`
+	TanggalAksi  time.Time      `json:"tanggal_aksi"`
+	JenisAksi    string         `json:"jenis_aksi"`
 	Keterangan   *string        `json:"keterangan"`
-	Created_At   time.Time
-	Updated_At   time.Time
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
 }

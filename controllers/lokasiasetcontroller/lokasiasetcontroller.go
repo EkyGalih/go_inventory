@@ -1,8 +1,8 @@
 package lokasiasetcontroller
 
 import (
+	"database/sql"
 	"encoding/json"
-	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
 	"inventaris/helpers/queryhelpers"
@@ -13,295 +13,271 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	lokasiaset := lokasiasetmodel.GetAll()
-	aset := asettikmodel.GetAll()
-	bidang := bidangmodel.GetAll()
-	pegawai := pegawaimodel.GetALl()
+func Index(c *gin.Context) {
+	// buat session message
+	session := sessions.Default(c)
+	flashes := session.Flashes()
+	session.Save()
 
-	path := map[string]string{
-		"menu": "lokasi-aset",
+	// Mengambil semua lokasi aset, aset, bidang, dan pegawai
+	lokasiaset, err := lokasiasetmodel.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve lokasi aset: " + err.Error()})
+		return
 	}
+	aset, _ := asettikmodel.GetAll()
+	bidang, _ := bidangmodel.GetAllBidang()
+	pegawai, _ := pegawaimodel.GetAll()
+
+	// Menghitung jumlah aset per pegawai
 	aset_pegawai := queryhelpers.CountAsetPegawai(lokasiaset)
 	if aset_pegawai == nil {
 		aset_pegawai = make(map[string]int)
 	}
 
-	data := map[string]any{
+	// Data untuk template
+	data := map[string]interface{}{
 		"Title":        "Lokasi Aset",
-		"path":         path,
+		"path":         map[string]string{"menu": "lokasi-aset"},
 		"lokasiaset":   lokasiaset,
 		"aset":         aset,
 		"bidang":       bidang,
 		"pegawai":      pegawai,
 		"aset_pegawai": aset_pegawai,
+		"flashes":      flashes,
 	}
 
-	helpers.RenderTemplate(w, "lokasi_aset/index.html", data)
+	helpers.RenderTemplate(c, "lokasi_aset/index.html", data)
 }
 
-func Add(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		aset := asettikmodel.GetAll()
-		bidang := bidangmodel.GetAll()
-		pegawai := pegawaimodel.GetALl()
+func Add(c *gin.Context) {
+	if c.Request.Method == http.MethodGet {
+		// Mengambil data untuk form input
+		aset, _ := asettikmodel.GetAll()
+		bidang, _ := bidangmodel.GetAllBidang()
+		pegawai, _ := pegawaimodel.GetAll()
 
-		path := map[string]string{
-			"menu": "lokasi-aset",
-		}
-		data := map[string]any{
+		data := gin.H{
 			"Title":   "Lokasi Aset",
-			"path":    path,
+			"path":    map[string]string{"menu": "lokasi-aset"},
 			"aset":    aset,
 			"bidang":  bidang,
 			"pegawai": pegawai,
 		}
-		helpers.RenderTemplate(w, "lokasi_aset/create.html", data)
+		if err := helpers.RenderTemplate(c, "lokasi_aset/create.html", data); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
-	if r.Method == http.MethodPost {
+	if c.Request.Method == http.MethodPost {
 		var lokasiaset entities.LokasiAset
 
-		aset_id := r.FormValue("aset_id")
-		bidang_id := r.FormValue("bidang_id")
-		pegawai_id := r.FormValue("pegawai_id")
+		// Mengambil nilai dari form input
+		aset_id := c.PostForm("aset_id")
+		bidang_id := c.PostForm("bidang_id")
+		pegawai_id := c.PostForm("pegawai_id")
 
+		// Mengambil data terkait berdasarkan ID
 		aset, err := asettikmodel.Detail(aset_id)
 		if err != nil {
-			http.Error(w, "failed to get detail aset : "+err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get detail aset: " + err.Error()})
 			return
 		}
 
-		bidang, err := bidangmodel.Detail(bidang_id)
+		bidang, err := bidangmodel.GetBidangByID(bidang_id)
 		if err != nil {
-			http.Error(w, "failed to get detail bidang : "+err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get detail bidang: " + err.Error()})
 			return
 		}
 
 		pegawai, err := pegawaimodel.Detail(pegawai_id)
 		if err != nil {
-			http.Error(w, "failed to get detail pegawai : "+err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get detail pegawai: " + err.Error()})
 			return
 		}
-		fmt.Println(r.FormValue("jenis_pemanfaatan"))
-		lokasiaset.Aset_id = r.FormValue("aset_id")
-		lokasiaset.Bidang_id = r.FormValue("bidang_id")
-		lokasiaset.Pegawai_id = r.FormValue("pegawai_id")
-		tanggalPerolehan, err := time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
+
+		// Mengisi data lokasiaset dari form
+		lokasiaset.AsetID = aset_id
+		lokasiaset.BidangID = bidang_id
+		lokasiaset.PegawaiID = pegawai_id
+		tanggalPerolehan, err := time.Parse("2006-01-02", c.PostForm("tanggal_perolehan"))
 		if err != nil {
-			http.Error(w, "Invalid date format for Tanggal Perolehan", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format for Tanggal Perolehan"})
 			return
 		}
-		lokasiaset.Tanggal_Perolehan = tanggalPerolehan
+		lokasiaset.TanggalPerolehan = tanggalPerolehan
+
+		// Menangani tanggal selesai
 		var tanggalSelesai *time.Time
-		tglSelesaiStr := r.FormValue("tanggal_selesai")
+		tglSelesaiStr := c.PostForm("tanggal_selesai")
 		if tglSelesaiStr != "" {
 			tglSelesai, err := time.Parse("2006-01-02", tglSelesaiStr)
 			if err != nil {
-				http.Error(w, "Invalid date format for Tanggal Selesai", http.StatusBadRequest)
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format for Tanggal Selesai"})
 				return
 			}
 			tanggalSelesai = &tglSelesai
 		}
-		lokasiaset.Tanggal_Selesai = tanggalSelesai
-		jenis_pemanfaatan := r.FormValue("jenis_pemanfaatan")
-		lokasiaset.Jenis_Pemanfaatan = &jenis_pemanfaatan
-		keterangan := r.FormValue("keterangan")
+		lokasiaset.TanggalSelesai = tanggalSelesai
+		jenisPemanfaatan := c.PostForm("jenis_pemanfaatan")
+		lokasiaset.JenisPemanfaatan = &jenisPemanfaatan
+		keterangan := c.PostForm("keterangan")
 		lokasiaset.Keterangan = &keterangan
-		lokasiaset.Created_At = time.Now()
-		lokasiaset.Updated_At = time.Now()
+		lokasiaset.CreatedAt = time.Now()
+		lokasiaset.UpdatedAt = time.Now()
 
+		// Membuat riwayat aset dan menyimpannya ke file JSON
 		data := entities.Riwayat{
-			Id:           uuid.New().String(),
-			Aset_id:      aset.Id,
-			Nama_Aset:    aset.Nama_Aset,
-			Kode_Aset:    aset.Kode_Aset,
-			Bidang_id:    bidang.Id,
-			Nama_Bidang:  bidang.Nama_Bidang,
-			Pegawai_id:   pegawai.Id,
-			Nama_Pegawai: pegawai.Name,
-			Foto_Pegawai: pegawai.Foto,
-			Nip_Pegawai:  pegawai.Nip,
-			Tanggal_Aksi: tanggalPerolehan,
-			Jenis_Aksi:   "Penerimaan Aset",
-			Keterangan:   &keterangan,
-			Created_At:   time.Now(),
-			Updated_At:   time.Now(),
+			ID:          uuid.New().String(),
+			AsetID:      aset.ID,
+			NamaAset:    aset.NamaAset,
+			KodeAset:    aset.KodeAset,
+			BidangID:    bidang.ID,
+			NamaBidang:  bidang.NamaBidang,
+			PegawaiID:   strconv.Itoa(int(pegawai.ID)),
+			NamaPegawai: pegawai.Name,
+			FotoPegawai: sql.NullString{String: pegawai.Foto, Valid: pegawai.Foto != ""}, // Convert to sql.NullString
+			NipPegawai:  sql.NullString{String: pegawai.Nip, Valid: pegawai.Nip != ""},   // Convert to sql.NullString
+			TanggalAksi: tanggalPerolehan,
+			JenisAksi:   "Penerimaan Aset",
+			Keterangan:  &keterangan,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
 		}
 
-		var existingData []entities.Riwayat
+		// Menyimpan riwayat ke file JSON
 		path := "./data/riwayataset"
-		jsonName := aset.Kode_Aset + ".json"
+		jsonName := aset.KodeAset + ".json"
 		jsonFile := filepath.Join(path, jsonName)
 
-		// Membaca data JSON yang ada
+		var existingData []entities.Riwayat
 		if _, err := os.Stat(jsonFile); !os.IsNotExist(err) {
 			file, err := os.ReadFile(jsonFile)
 			if err != nil {
-				http.Error(w, "Failed to read existing JSON file : "+err.Error(), http.StatusInternalServerError)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read existing JSON file: " + err.Error()})
 				return
 			}
 
 			err = json.Unmarshal(file, &existingData)
 			if err != nil {
-				http.Error(w, "Failed to parse existing JSON data : "+err.Error(), http.StatusInternalServerError)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse existing JSON data: " + err.Error()})
 				return
 			}
 		}
 
-		// Menambahkan data baru ke array
 		existingData = append(existingData, data)
-
 		jsonData, err := json.MarshalIndent(existingData, "", "   ")
 		if err != nil {
-			http.Error(w, "Failed to Marshal data json :"+err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to Marshal data json: " + err.Error()})
 			return
 		}
 
 		err = os.WriteFile(jsonFile, jsonData, 0644)
 		if err != nil {
-			http.Error(w, "Failed to write JSON to file", http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write JSON to file"})
 			return
 		}
 
+		// Menyimpan data lokasi aset menggunakan GORM
 		success, err := lokasiasetmodel.Create(lokasiaset)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if success {
-			http.Redirect(w, r, "/lokasi-aset", http.StatusSeeOther)
+			c.Redirect(http.StatusSeeOther, "/lokasi-aset")
 		} else {
-			http.Error(w, "Failed to create lokasi aset", http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create lokasi aset"})
 		}
 	}
 }
 
-func Edit(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		idString := r.URL.Query().Get("id")
+func Edit(c *gin.Context) {
+	if c.Request.Method == http.MethodGet {
+		idString := c.Query("id")
 		if idString == "" {
-			http.Error(w, "Parameter id tidak ditemukan", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Parameter id tidak ditemukan"})
 			return
 		}
 
-		aset := asettikmodel.GetAll()
-		bidang := bidangmodel.GetAll()
-		pegawai := pegawaimodel.GetALl()
+		// Mengambil data untuk form edit
+		aset, _ := asettikmodel.GetAll()
+		bidang, _ := bidangmodel.GetAllBidang()
+		pegawai, _ := pegawaimodel.GetAll()
+
+		// Mengambil detail lokasi aset
 		lokasiaset, err := lokasiasetmodel.Detail(idString)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		path := map[string]string{
-			"menu": "lokasi-aset",
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
 		data := map[string]interface{}{
 			"Title":             "Edit Lokasi Aset",
-			"path":              path,
+			"path":              map[string]string{"menu": "lokasi-aset"},
 			"aset":              aset,
 			"bidang":            bidang,
 			"pegawai":           pegawai,
 			"lokasiaset":        lokasiaset,
-			"SelectedAset":      lokasiaset.Aset_id,
-			"SelectedBidang":    lokasiaset.Bidang_id,
-			"SelectedPegawai":   lokasiaset.Pegawai_id,
-			"SelectedJenisAset": lokasiaset.Jenis_Pemanfaatan,
+			"SelectedAset":      lokasiaset.AsetID,
+			"SelectedBidang":    lokasiaset.BidangID,
+			"SelectedPegawai":   lokasiaset.PegawaiID,
+			"SelectedJenisAset": lokasiaset.JenisPemanfaatan,
 		}
 
-		helpers.RenderTemplate(w, "lokasi_aset/edit.html", data)
+		c.HTML(http.StatusOK, "lokasi_aset/edit.html", data)
 	}
 
-	if r.Method == http.MethodPost {
-		idString := r.FormValue("id")
+	if c.Request.Method == http.MethodPost {
+		// Memperbarui data lokasi aset
+		idString := c.PostForm("id")
 		if idString == "" {
-			http.Error(w, "Parameter id tidak ditemukan", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Parameter id tidak ditemukan"})
 			return
 		}
-		fmt.Println(r.FormValue("jenis_pemanfaatan"))
+
 		var lokasiaset entities.LokasiAset
-		lokasiaset.Aset_id = r.FormValue("aset_id")
-		lokasiaset.Bidang_id = r.FormValue("bidang_id")
-		lokasiaset.Pegawai_id = r.FormValue("pegawai_id")
-		lokasiaset.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
-		tglSelesaiStr := r.FormValue("tanggal_selesai")
+		lokasiaset.AsetID = c.PostForm("aset_id")
+		lokasiaset.BidangID = c.PostForm("bidang_id")
+		lokasiaset.PegawaiID = c.PostForm("pegawai_id")
+		lokasiaset.TanggalPerolehan, _ = time.Parse("2006-01-02", c.PostForm("tanggal_perolehan"))
+		tglSelesaiStr := c.PostForm("tanggal_selesai")
 		if tglSelesaiStr != "" {
 			tgl_selesai, err := time.Parse("2006-01-02", tglSelesaiStr)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			lokasiaset.Tanggal_Selesai = &tgl_selesai
+			lokasiaset.TanggalSelesai = &tgl_selesai
 		} else {
-			lokasiaset.Tanggal_Selesai = nil
+			lokasiaset.TanggalSelesai = nil
 		}
-		jenis_pemanfaatan := r.FormValue("jenis_pemanfaatan")
-		lokasiaset.Jenis_Pemanfaatan = &jenis_pemanfaatan
-		keterangan := r.FormValue("keterangan")
+		jenisPemanfaatan := c.PostForm("jenis_pemanfaatan")
+		lokasiaset.JenisPemanfaatan = &jenisPemanfaatan
+		keterangan := c.PostForm("keterangan")
 		lokasiaset.Keterangan = &keterangan
-		lokasiaset.Updated_At = time.Now()
+		lokasiaset.UpdatedAt = time.Now()
 
 		success, err := lokasiasetmodel.Update(idString, lokasiaset)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		if success {
-			http.Redirect(w, r, "/lokasi-aset", http.StatusSeeOther)
+			c.Redirect(http.StatusSeeOther, "/lokasi-aset")
 		} else {
-			http.Error(w, "Failed to update lokasi aset", http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update lokasi aset"})
 		}
 	}
-}
-
-func AsetPegawai(w http.ResponseWriter, r *http.Request) {
-	idString := r.URL.Query().Get("pegawai_id")
-	if idString == "" {
-		http.Error(w, "Parameter id tidak ditemukan", http.StatusBadRequest)
-		return
-	}
-
-	asetPegawai := lokasiasetmodel.DaftarAset(idString)
-
-	asetIDs := make([]string, len(asetPegawai))
-	for i, aset := range asetPegawai {
-		asetIDs[i] = aset.Id
-	}
-	var lokasiaset entities.LokasiAset
-	if len(asetIDs) > 0 {
-		var err error
-		lokasiaset, err = lokasiasetmodel.Detail(asetIDs[0])
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
-
-	aset_pegawai := queryhelpers.CountAsetPegawai(asetPegawai)
-	if aset_pegawai == nil {
-		aset_pegawai = make(map[string]int)
-	}
-
-	path := map[string]string{
-		"menu": "lokasi-aset",
-	}
-
-	data := map[string]interface{}{
-		"Title":            "Daftar Aset Pegawai",
-		"path":             path,
-		"asetPegawai":      asetPegawai,
-		"lokasiaset":       lokasiaset,
-		"countAsetPegawai": aset_pegawai,
-	}
-
-	helpers.RenderTemplate(w, "lokasi_aset/daftar_aset.html", data)
-
 }

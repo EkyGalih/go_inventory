@@ -1,357 +1,374 @@
 package asettikcontroller
 
-import (
-	"inventaris/entities"
-	"inventaris/helpers/helpers"
-	"inventaris/helpers/queryhelpers"
-	"inventaris/models/asettikmodel"
-	"inventaris/models/bidangmodel"
-	"inventaris/models/categorymodel"
-	"inventaris/models/pegawaimodel"
-	"inventaris/models/tipemodel"
-	"io"
-	"math"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-)
+// import (
+// 	"inventaris/entities"
+// 	"inventaris/helpers/helpers"
+// 	"inventaris/helpers/queryhelpers"
+// 	"inventaris/models/asettikmodel"
+// 	"inventaris/models/bidangmodel"
+// 	"inventaris/models/categorymodel"
+// 	"inventaris/models/pegawaimodel"
+// 	"inventaris/models/tipemodel"
+// 	"io"
+// 	"math"
+// 	"net/http"
+// 	"os"
+// 	"path/filepath"
+// 	"strconv"
+// 	"strings"
+// 	"time"
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	pageStr := r.URL.Query().Get("page")
-	limitStr := r.URL.Query().Get("limit")
+// 	"github.com/gin-gonic/gin"
+// )
 
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
-	}
+// func Index(c *gin.Context) {
+// 	pageStr := c.Query("page")
+// 	limitStr := c.Query("limit")
 
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit < 1 {
-		limit = 10
-	}
+// 	page, err := strconv.Atoi(pageStr)
+// 	if err != nil || page < 1 {
+// 		page = 1
+// 	}
 
-	aset_tiks, err := asettikmodel.GetPaginate(page, limit)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	limit, err := strconv.Atoi(limitStr)
+// 	if err != nil || limit < 1 {
+// 		limit = 10
+// 	}
 
-	aset_tik := asettikmodel.GetAll()
+// 	aset_tiks, err := asettikmodel.GetPaginate(page, limit)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	totalRows, err := asettikmodel.GetTotalRows()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	aset_tik, err := asettikmodel.GetAll()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
+// 	totalRows, err := asettikmodel.GetTotalRows()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	distribusi := queryhelpers.GetDistribusi(aset_tik)
-	if distribusi == nil {
-		distribusi = make(map[string]int)
-	}
+// 	totalPages := int(math.Ceil(float64(totalRows) / float64(limit)))
 
-	// untuk show menu dan active sub menu
-	path := map[string]string{
-		"menu":    "aset",
-		"subMenu": "aset-tik",
-	}
+// 	distribusi := queryhelpers.GetDistribusi(aset_tik)
+// 	if distribusi == nil {
+// 		distribusi = make(map[string]int)
+// 	}
 
-	data := map[string]any{
-		"Title":      "Aset TIK",
-		"path":       path,
-		"Page":       page,
-		"TotalPages": totalPages,
-		"TotalRows":  totalRows,
-		"Limit":      limit,
-		"aset_tiks":  aset_tiks,
-		"distribusi": distribusi,
-	}
+// 	// untuk show menu dan active sub menu
+// 	path := map[string]string{
+// 		"menu":    "aset",
+// 		"subMenu": "aset-tik",
+// 	}
 
-	helpers.RenderTemplate(w, "/aset/aset_tik/index.html", data)
-}
+// 	data := map[string]any{
+// 		"Title":      "Aset TIK",
+// 		"path":       path,
+// 		"Page":       page,
+// 		"TotalPages": totalPages,
+// 		"TotalRows":  totalRows,
+// 		"Limit":      limit,
+// 		"aset_tiks":  aset_tiks,
+// 		"distribusi": distribusi,
+// 	}
 
-func Add(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		categories := categorymodel.GetAll()
-		tipes := tipemodel.GetAll()
+// 	c.HTML(http.StatusOK, "/aset/aset_tik/index.html", data)
+// }
 
-		// untuk show menu dan active sub menu
-		path := map[string]string{
-			"menu":    "aset",
-			"subMenu": "aset-tik",
-		}
+// func Add(c *gin.Context) {
+// 	if c.Request.Method == http.MethodGet {
+// 		categories, err := categorymodel.GetAll()
+// 		if err != nil {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 		tipes, err := tipemodel.GetAll()
+// 		if err != nil {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 			return
+// 		}
 
-		data := map[string]any{
-			"Title":      "Add Aset TIK",
-			"path":       path,
-			"categories": categories,
-			"tipes":      tipes,
-		}
-		helpers.RenderTemplate(w, "/aset/aset_tik/create.html", data)
-	}
+// 		path := map[string]string{
+// 			"menu":    "aset",
+// 			"subMenu": "aset-tik",
+// 		}
 
-	if r.Method == http.MethodPost {
-		err := r.ParseMultipartForm(10 << 20)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+// 		data := map[string]any{
+// 			"Title":      "Add Aset TIK",
+// 			"path":       path,
+// 			"categories": categories,
+// 			"tipes":      tipes,
+// 		}
+// 		c.HTML(http.StatusOK, "/aset/aset_tik/create.html", data)
+// 	}
 
-		var aset_tik entities.AsetTik
+// 	if c.Request.Method == http.MethodPost {
+// 		err := c.Request.ParseMultipartForm(10 << 20)
+// 		if err != nil {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 			return
+// 		}
 
-		// handle file upload
-		file, _, err := r.FormFile("gambar")
-		if err != nil {
-			http.Error(w, "Unable to retrieve file "+err.Error(), http.StatusBadRequest)
-			return
-		}
-		defer file.Close()
+// 		var aset_tik entities.AsetTik
 
-		// save the file
-		path := "./public/uploads/aset/tetap/"
-		fileName := helpers.RandString(30) + ".jpg"
-		filePath := filepath.Join(path, fileName)
-		dbPath := strings.ReplaceAll(filepath.Join("/public/uploads/aset/tetap/", fileName), "\\", "/")
+// 		file, _, err := c.Request.FormFile("Gambar")
+// 		if err != nil {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to retrieve file " + err.Error()})
+// 			return
+// 		}
+// 		defer file.Close()
 
-		dest, err := os.Create(filePath)
-		if err != nil {
-			http.Error(w, "Unable to save file: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer dest.Close()
-		_, err = io.Copy(dest, file)
-		if err != nil {
-			http.Error(w, "Unable to save file: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+// 		path := "./public/uploads/aset/tetap/"
+// 		fileName := helpers.RandString(30) + ".jpg"
+// 		filePath := filepath.Join(path, fileName)
+// 		dbPath := strings.ReplaceAll(filepath.Join("/public/uploads/aset/tetap/", fileName), "\\", "/")
 
-		aset_tik.Jenis_Aset = r.FormValue("jenis_aset")
-		aset_tik.Kode_Aset = r.FormValue("kode_aset")
-		aset_tik.Nama_Aset = r.FormValue("nama_aset")
-		aset_tik.Merek = r.FormValue("merek")
-		aset_tik.Model = r.FormValue("model")
-		aset_tik.Serial_Number = r.FormValue("serial_number")
-		deskripsi := r.FormValue("deskripsi")
-		aset_tik.Deskripsi = &deskripsi
-		aset_tik.Kategori_id = r.FormValue("kategori_id")
-		aset_tik.Tipe_id = r.FormValue("tipe_id")
-		aset_tik.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
-		aset_tik.Status = r.FormValue("status")
-		aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(r.FormValue("nilai"))
-		aset_tik.Jumlah, err = strconv.ParseFloat(r.FormValue("jumlah"), 64)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		satuan := r.FormValue("satuan")
-		aset_tik.Satuan = &satuan
-		keterangan := r.FormValue("keterangan")
-		aset_tik.Keterangan = &keterangan
-		aset_tik.Path = &dbPath
-		aset_tik.Gambar = &fileName
-		aset_tik.Created_At = time.Now()
-		aset_tik.Updated_At = time.Now()
+// 		dest, err := os.Create(filePath)
+// 		if err != nil {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file: " + err.Error()})
+// 			return
+// 		}
+// 		defer dest.Close()
+// 		_, err = io.Copy(dest, file)
+// 		if err != nil {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file: " + err.Error()})
+// 			return
+// 		}
 
-		success, err := asettikmodel.Create(aset_tik)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+// 		aset_tik.JenisAset = c.PostForm("JenisAset")
+// 		aset_tik.KodeAset = c.PostForm("KodeAset")
+// 		aset_tik.NamaAset = c.PostForm("NamaAset")
+// 		aset_tik.Merek = c.PostForm("Merek")
+// 		aset_tik.Model = c.PostForm("Model")
+// 		aset_tik.SerialNumber = c.PostForm("SerialNumber")
+// 		deskripsi := c.PostForm("Deskripsi")
+// 		aset_tik.Deskripsi = deskripsi
+// 		aset_tik.KategoriID = c.PostForm("KategoriID")
+// 		aset_tik.TipeID = c.PostForm("TipeID")
+// 		aset_tik.TanggalPerolehan, _ = time.Parse("2006-01-02", c.PostForm("TanggalPerolehan"))
+// 		aset_tik.Status = c.PostForm("Status")
+// 		aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(c.PostForm("Nilai"))
+// 		jumlahFloat, err := strconv.ParseFloat(c.PostForm("Jumlah"), 64)
+// 		if err != nil {
+// 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 		aset_tik.Jumlah = int(jumlahFloat)
+// 		satuan := c.PostForm("Satuan")
+// 		aset_tik.Satuan = satuan
+// 		keterangan := c.PostForm("Keterangan")
+// 		aset_tik.Keterangan = keterangan
+// 		aset_tik.Path = dbPath
+// 		aset_tik.Gambar = fileName
+// 		aset_tik.CreatedAt = time.Now()
+// 		aset_tik.UpdatedAt = time.Now()
 
-		if success {
-			http.Redirect(w, r, "/aset/aset-tik", http.StatusSeeOther)
-		} else {
-			http.Error(w, "Failed to create aset_tik", http.StatusInternalServerError)
-		}
-	}
-}
+// 		success := asettikmodel.Create(&aset_tik)
+// 		if success == nil {
+// 			c.Redirect(http.StatusSeeOther, "/aset/aset-tik")
+// 		} else {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create aset_tik"})
+// 		}
+// 	}
+// }
 
-func Edit(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		idString := r.URL.Query().Get("id")
-		if idString == "" {
-			http.Error(w, "Missing id parameter", http.StatusBadRequest)
-			return
-		}
+// func Edit(c *gin.Context) {
+// 	idString := c.Query("id")
+// 	if idString == "" {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing id parameter"})
+// 		return
+// 	}
 
-		categories := categorymodel.GetAll()
-		tipes := tipemodel.GetAll()
-		aset_tik, err := asettikmodel.Detail(idString)
+// 	categories, _ := categorymodel.GetAll()
+// 	tipes, _ := tipemodel.GetAll()
+// 	aset_tik, err := asettikmodel.Detail(idString)
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-		// untuk show menu dan active sub menu
-		path := map[string]string{
-			"menu":    "aset",
-			"subMenu": "aset-tik",
-		}
+// 	path := map[string]string{
+// 		"menu":    "aset",
+// 		"subMenu": "aset-tik",
+// 	}
 
-		data := map[string]interface{}{
-			"Title":        "Edit Aset TIK",
-			"path":         path,
-			"aset_tik":     aset_tik,
-			"categories":   categories,
-			"tipes":        tipes,
-			"SelectedTipe": aset_tik.Tipe_id,
-			"SelectedAset": aset_tik.Kategori_id, // untuk selected kategori aset
-		}
+// 	data := map[string]interface{}{
+// 		"Title":        "Edit Aset TIK",
+// 		"path":         path,
+// 		"aset_tik":     aset_tik,
+// 		"categories":   categories,
+// 		"tipes":        tipes,
+// 		"SelectedTipe": aset_tik.TipeID,
+// 		"SelectedAset": aset_tik.KategoriID, // untuk selected kategori aset
+// 	}
 
-		helpers.RenderTemplate(w, "aset/aset_tik/edit.html", data)
-	}
+// 	c.HTML(http.StatusOK, "/aset/aset_tik/edit.html", data)
+// }
 
-	if r.Method == http.MethodPost {
-		idString := r.FormValue("id")
-		if idString == "" {
-			http.Error(w, "Missing id parameter", http.StatusBadRequest)
-			return
-		}
+// func Update(c *gin.Context) {
+// 	idString := c.PostForm("ID")
+// 	if idString == "" {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing ID parameter"})
+// 		return
+// 	}
 
-		aset, err := asettikmodel.Detail(idString)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
+// 	aset, err := asettikmodel.Detail(idString)
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-		oldFilePath := filepath.Join(".", *aset.Path)
-		var aset_tik entities.AsetTik
-		var dbPath, fileName string
+// 	oldFilePath := filepath.Join(".", aset.Path)
+// 	var aset_tik entities.AsetTik
+// 	var dbPath, fileName string
 
-		// check if a new file is uploaded
-		file, _, err := r.FormFile("gambar")
-		if err != nil {
-			if err == http.ErrMissingFile {
-				// Tidak ada file baru, lanjutkan tanpa mengubah file lama
-				file = nil
-				dbPath = *aset.Path
-				fileName = *aset.Gambar
-			} else {
-				http.Error(w, "Error retrieving file", http.StatusInternalServerError)
-				return
-			}
-		} else {
-			// Hapus file lama jika ada
-			if _, err := os.Stat(oldFilePath); err == nil {
-				err := os.Remove(oldFilePath)
-				if err != nil {
-					http.Error(w, "Failed to delete old file", http.StatusInternalServerError)
-					return
-				}
-			}
+// 	// check if a new file is uploaded
+// 	file, _, err := c.Request.FormFile("Gambar")
+// 	if err != nil {
+// 		if err == http.ErrMissingFile {
+// 			// Tidak ada file baru, lanjutkan tanpa mengubah file lama
+// 			file = nil
+// 			dbPath = aset.Path
+// 			fileName = aset.Gambar
+// 		} else {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error retrieving file"})
+// 			return
+// 		}
+// 	} else {
+// 		// Hapus file lama jika ada
+// 		if _, err := os.Stat(oldFilePath); err == nil {
+// 			err := os.Remove(oldFilePath)
+// 			if err != nil {
+// 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete old file"})
+// 				return
+// 			}
+// 		}
 
-			// Simpan file baru
-			path := "./public/uploads/aset/tetap/"
-			fileName = helpers.RandString(30) + ".jpg"
-			newFilePath := filepath.Join(path, fileName)
-			dbPath = strings.ReplaceAll(filepath.Join("/public/uploads/aset/tetap/", fileName), "\\", "/")
+// 		// Simpan file baru
+// 		path := "./public/uploads/aset/tetap/"
+// 		fileName = helpers.RandString(30) + ".jpg"
+// 		newFilePath := filepath.Join(path, fileName)
+// 		dbPath = strings.ReplaceAll(filepath.Join("/public/uploads/aset/tetap/", fileName), "\\", "/")
 
-			out, err := os.Create(newFilePath)
+// 		out, err := os.Create(newFilePath)
 
-			if err != nil {
-				http.Error(w, "Failed to create new file", http.StatusInternalServerError)
-				return
-			}
-			defer out.Close()
+// 		if err != nil {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new file"})
+// 			return
+// 		}
+// 		defer out.Close()
 
-			_, err = io.Copy(out, file)
-			if err != nil {
-				http.Error(w, "Failed to save new file", http.StatusInternalServerError)
-				return
-			}
-			defer file.Close()
-		}
+// 		_, err = io.Copy(out, file)
+// 		if err != nil {
+// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save new file"})
+// 			return
+// 		}
+// 		defer file.Close()
+// 	}
 
-		aset_tik.Nama_Aset = r.FormValue("nama_aset")
-		aset_tik.Jenis_Aset = r.FormValue("jenis_aset")
-		aset_tik.Merek = r.FormValue("merek")
-		aset_tik.Model = r.FormValue("model")
-		aset_tik.Tanggal_Perolehan, _ = time.Parse("2006-01-02", r.FormValue("tanggal_perolehan"))
-		aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(r.FormValue("nilai"))
-		deskripsi := r.FormValue("deskripsi")
-		aset_tik.Deskripsi = &deskripsi
-		aset_tik.Path = &dbPath
-		aset_tik.Gambar = &fileName
-		aset_tik.Kode_Aset = r.FormValue("kode_aset")
-		aset_tik.Kategori_id = r.FormValue("kategori_id")
-		aset_tik.Tipe_id = r.FormValue("tipe_id")
-		aset_tik.Serial_Number = r.FormValue("serial_number")
-		aset_tik.Status = r.FormValue("status")
-		aset_tik.Jumlah, err = strconv.ParseFloat(r.FormValue("jumlah"), 64)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		satuan := r.FormValue("satuan")
-		aset_tik.Satuan = &satuan
-		keterangan := r.FormValue("keterangan")
-		aset_tik.Keterangan = &keterangan
-		aset_tik.Created_At = time.Now()
-		aset_tik.Updated_At = time.Now()
+// 	aset_tik.NamaAset = c.PostForm("NamaAset")
+// 	aset_tik.JenisAset = c.PostForm("JenisAset")
+// 	aset_tik.Merek = c.PostForm("Merek")
+// 	aset_tik.Model = c.PostForm("Model")
+// 	aset_tik.TanggalPerolehan, _ = time.Parse("2006-01-02", c.PostForm("TanggalPerolehan"))
+// 	aset_tik.Nilai, _ = helpers.ParseCurrencyToFloat(c.PostForm("Nilai"))
+// 	deskripsi := c.PostForm("Deskripsi")
+// 	aset_tik.Deskripsi = deskripsi
+// 	aset_tik.Path = dbPath
+// 	aset_tik.Gambar = fileName
+// 	aset_tik.KodeAset = c.PostForm("KodeAset")
+// 	aset_tik.KategoriID = c.PostForm("KategoriID")
+// 	aset_tik.TipeID = c.PostForm("TipeID")
+// 	aset_tik.SerialNumber = c.PostForm("SerialNumber")
+// 	aset_tik.Status = c.PostForm("Status")
+// 	jumlahFloat, err := strconv.ParseFloat(c.PostForm("Jumlah"), 64)
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	aset_tik.Jumlah = int(jumlahFloat)
+// 	satuan := c.PostForm("Satuan")
+// 	aset_tik.Satuan = satuan
+// 	keterangan := c.PostForm("Keterangan")
+// 	aset_tik.Keterangan = keterangan
+// 	aset_tik.CreatedAt = time.Now()
+// 	aset_tik.UpdatedAt = time.Now()
 
-		success, err := asettikmodel.Update(idString, aset_tik)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+// 	success := asettikmodel.Update(idString, aset_tik)
+// 	if success == nil {
+// 		c.Redirect(http.StatusSeeOther, "/aset/aset-tik")
+// 	} else {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update aset_tik"})
+// 	}
+// }
 
-		if success {
-			http.Redirect(w, r, "/aset/aset-tik", http.StatusSeeOther)
-		} else {
-			http.Error(w, "Failed to update aset_tik", http.StatusInternalServerError)
-		}
-	}
-}
+// func Distribusi(c *gin.Context) {
+// 	idString := c.Query("aset_id")
+// 	if idString == "" {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing id parameter"})
+// 		return
+// 	}
 
-func Distribusi(w http.ResponseWriter, r *http.Request) {
-	idString := r.URL.Query().Get("aset_id")
-	if idString == "" {
-		http.Error(w, "Missing id parameter", http.StatusBadRequest)
-		return
-	}
+// 	asets, err := asettikmodel.GetAll()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	asets := asettikmodel.GetAll()
-	bidang := bidangmodel.GetAll()
-	pegawai := pegawaimodel.GetALl()
-	aset, err := asettikmodel.Detail(idString)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// 	bidang, err := bidangmodel.GetAllBidang()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	path := map[string]string{
-		"menu":    "aset",
-		"subMenu": "aset-tik",
-	}
+// 	pegawai, err := pegawaimodel.GetAll()
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	data := map[string]interface{}{
-		"Title":        "Distribusi Aset",
-		"path":         path,
-		"aset":         aset,
-		"asets":        asets,
-		"bidang":       bidang,
-		"pegawai":      pegawai,
-		"SelectedAset": aset.Id,
-	}
+// 	aset, err := asettikmodel.Detail(idString)
+// 	if err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	helpers.RenderTemplate(w, "aset/aset_tik/distribusi.html", data)
-}
+// 	path := map[string]string{
+// 		"menu":    "aset",
+// 		"subMenu": "aset-tik",
+// 	}
 
-func Delete(w http.ResponseWriter, r *http.Request) {
-	idString := r.URL.Query().Get("id")
+// 	data := gin.H{
+// 		"Title":        "Distribusi Aset",
+// 		"path":         path,
+// 		"aset":         aset,
+// 		"asets":        asets,
+// 		"bidang":       bidang,
+// 		"pegawai":      pegawai,
+// 		"SelectedAset": aset.ID,
+// 	}
 
-	if idString == "" {
-		http.Error(w, "Missing id parameter", http.StatusBadRequest)
-		return
-	}
+// 	c.HTML(http.StatusOK, "aset/aset_tik/distribusi.html", data)
+// }
 
-	if err := asettikmodel.Delete(idString); err != nil {
-		http.Error(w, "Failed to delete aset_tik", http.StatusInternalServerError)
-		return
-	}
+// func Delete(c *gin.Context) {
+// 	idString := c.Query("id")
 
-	http.Redirect(w, r, "/aset/aset-tik", http.StatusSeeOther)
-}
+// 	if idString == "" {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing id parameter"})
+// 		return
+// 	}
+
+// 	if err := asettikmodel.Delete(idString); err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete aset_tik"})
+// 		return
+// 	}
+
+// 	c.Redirect(http.StatusSeeOther, "/aset/aset-tik")
+// }

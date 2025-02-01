@@ -1,9 +1,6 @@
-<script>
-  var hostUrl = "../../public/assets/";
-</script>
-<script src="../../public/assets/plugins/global/plugins.bundle.js"></script>
-<script src="../../public/assets/js/scripts.bundle.js"></script>
-<script src="../../public/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="/assets/plugins/global/plugins.bundle.js"></script>
+<script src="/assets/js/scripts.bundle.js"></script>
+<script src="/assets/plugins/custom/datatables/datatables.bundle.js"></script>
 <script>
   var loadFile = function (event) {
     var output = document.getElementById("aset");
@@ -45,3 +42,4 @@
     element.value = "Rp " + rupiah + decimalPart;
   }
 </script>
+{{block "scripts" .}}{{end}}

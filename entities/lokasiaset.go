@@ -1,25 +1,31 @@
 package entities
 
-import "time"
+import (
+	"database/sql"
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type LokasiAset struct {
-	Id                string `gorm:"primaryKey"`
-	Aset_id           string
-	Bidang_id         string
-	Pegawai_id        string
-	Tanggal_Perolehan time.Time
-	Tanggal_Selesai   *time.Time
-	Jenis_Pemanfaatan *string `gorm:"type:ENUM('Habis Pakai','Tetap');DEFAULT:'Tetap'"`
-	Keterangan        *string `gorm:"type:text"`
-	Created_At        time.Time
-	Updated_At        time.Time
-	Nama_Aset         string
-	Kode_Aset         string
-	Path              *string `gorm:"type:text"`
-	Nama_Bidang       string
-	Nama_Pegawai      string
-	Nip_Pegawai       string
-	Foto_Pegawai      *string `gorm:"type:text"`
-	Jenis_Pegawai     string
-	Jabatan           string
+	ID               string         `gorm:"primaryKey"`
+	AsetID           string         `gorm:"column:aset_id"`
+	BidangID         string         `gorm:"column:bidang_id"`
+	PegawaiID        string         `gorm:"column:pegawai_id"`
+	TanggalPerolehan time.Time      `gorm:"column:tanggal_perolehan"`
+	TanggalSelesai   *time.Time     `gorm:"column:tanggal_selesai"`
+	JenisPemanfaatan *string        `gorm:"type:enum('Habis Pakai','Tetap');default:'Tetap';column:jenis_pemanfaatan"`
+	Keterangan       *string        `gorm:"type:text;column:keterangan"`
+	NamaAset         string         `gorm:"column:nama_aset"`
+	KodeAset         string         `gorm:"column:kode_aset"`
+	Path             *string        `gorm:"type:text;column:path"`
+	NamaBidang       string         `gorm:"column:nama_bidang"`
+	NamaPegawai      string         `gorm:"column:nama_pegawai"`
+	NipPegawai       string         `gorm:"column:nip_pegawai"`
+	FotoPegawai      sql.NullString `gorm:"type:text;column:foto_pegawai"` // Use sql.NullString here
+	JenisPegawai     string         `gorm:"column:jenis_pegawai"`
+	Jabatan          string         `gorm:"column:jabatan"`
+	CreatedAt        time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt        time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt        gorm.DeletedAt `gorm:"index"`
 }

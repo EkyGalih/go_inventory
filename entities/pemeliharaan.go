@@ -1,10 +1,15 @@
 package entities
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Pemeliharaan struct {
-	Id                   string `gorm:"primaryKey"`
-	Aset_id              string `gorm:"index"`
+	gorm.Model
+	Id                   string  `gorm:"primaryKey"`
+	Aset_id              string  `gorm:"index"`
 	Tanggal_Pemeliharaan time.Time
 	Kerusakan            *string `gorm:"type:text"`
 	Perbaikan            *string `gorm:"type:text"`
@@ -12,8 +17,6 @@ type Pemeliharaan struct {
 	Status               string  `gorm:"type:ENUM('Proses','Selesai');DEFAULT:'Proses'"`
 	Nota                 *string `gorm:"type:text"`
 	Biaya                float64
-	Created_At           time.Time
-	Updated_At           time.Time
 	Nama_Aset            string
 	Kode_Aset            string
 	Path                 *string `gorm:"type:text"`

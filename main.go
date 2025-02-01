@@ -1,70 +1,81 @@
 package main
 
 import (
+	"fmt"
 	"inventaris/config"
-	"inventaris/controllers/asethabispakaicontroller"
-	"inventaris/controllers/asettikcontroller"
-	"inventaris/controllers/categorycontroller"
-	"inventaris/controllers/homecontroller"
-	"inventaris/controllers/lokasiasetcontroller"
-	"inventaris/controllers/pemeliharaanaset"
-	"inventaris/controllers/riwayatasetcontroller"
-	"inventaris/controllers/tipeasetcontroller"
+	"inventaris/routes"
 	"log"
-	"net/http"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	fmt.Println("\033[32m====================================================")
+	fmt.Println("\033[32m  SELAMAT DATANG DI APLIKASI INVENTARIS ASSET  ")
+	fmt.Println("\033[32m====================================================")
+	fmt.Println("\033[0m")
 	config.ConnectDB()
 
-	// serve static file from public folder
-	fs := http.FileServer(http.Dir("public"))
-	http.Handle("/public/", http.StripPrefix("/public/", fs))
+	r := gin.Default()
 
-	// 1. Homepage
-	http.HandleFunc("/", homecontroller.Welcome)
+	// serve static file from public folder
+	r.Static("/assets", "./public/assets")
+	r.Static("/uploads", "./public/uploads")
+
+	// Inisialisasi session store
+	store := cookie.NewStore([]byte("oasioyd8iautsdbiutasdutasduy"))
+	r.Use(sessions.Sessions("mysession", store))
 
 	// 2. categories
-	http.HandleFunc("/addons/kategori", categorycontroller.Index)
-	http.HandleFunc("/addons/kategori/add", categorycontroller.Add)
-	http.HandleFunc("/addons/kategori/edit", categorycontroller.Edit)
-	http.HandleFunc("/addons/kategori/delete", categorycontroller.Delete)
+	// r.GET("/addons/kategori", categorycontroller.Index)
+	// r.GET("/addons/kategori/add", categorycontroller.Add)
+	// r.GET("/addons/kategori/edit", categorycontroller.Edit)
+	// r.GET("/addons/kategori/delete", categorycontroller.Delete)
 
-	// 3. aset tik
-	http.HandleFunc("/aset/aset-tik", asettikcontroller.Index)
-	http.HandleFunc("/aset/aset-tik/add", asettikcontroller.Add)
-	http.HandleFunc("/aset/aset-tik/edit", asettikcontroller.Edit)
-	http.HandleFunc("/aset/aset-tik/distribusi", asettikcontroller.Distribusi)
-	http.HandleFunc("/aset/aset-tik/delete", asettikcontroller.Delete)
+	// // 3. aset tik
+	// r.GET("/aset/aset-tik", asettikcontroller.Index)
+	// r.GET("/aset/aset-tik/add", asettikcontroller.Add)
+	// r.GET("/aset/aset-tik/edit", asettikcontroller.Edit)
+	// r.GET("/aset/aset-tik/distribusi", asettikcontroller.Distribusi)
+	// r.GET("/aset/aset-tik/delete", asettikcontroller.Delete)
 
-	http.HandleFunc("/aset/habis-pakai", asethabispakaicontroller.Index)
-	http.HandleFunc("/aset/habis-pakai/add", asethabispakaicontroller.Add)
-	http.HandleFunc("/aset/habis-pakai/edit", asethabispakaicontroller.Edit)
-	http.HandleFunc("/aset/habis-pakai/delete", asethabispakaicontroller.Delete)
+	// r.GET("/aset/habis-pakai", asethabispakaicontroller.Index)
+	// r.GET("/aset/habis-pakai/add", asethabispakaicontroller.Add)
+	// r.GET("/aset/habis-pakai/edit", asethabispakaicontroller.Edit)
+	// r.GET("/aset/habis-pakai/delete", asethabispakaicontroller.Delete)
 
-	// 4 tipe aset
-	http.HandleFunc("/addons/tipe", tipeasetcontroller.Index)
-	http.HandleFunc("/addons/tipe/add", tipeasetcontroller.Add)
-	http.HandleFunc("/addons/tipe/update", tipeasetcontroller.Update)
-	http.HandleFunc("/addons/tipe/delete", tipeasetcontroller.Delete)
+	// // 4 tipe aset
+	// r.GET("/addons/tipe", tipeasetcontroller.Index)
+	// r.GET("/addons/tipe/add", tipeasetcontroller.Add)
+	// r.GET("/addons/tipe/update", tipeasetcontroller.Update)
+	// r.GET("/addons/tipe/delete", tipeasetcontroller.Delete)
 
-	// 5. Pemeliharaan
-	http.HandleFunc("/pemeliharaan", pemeliharaanasetcontroller.Index)
-	http.HandleFunc("/pemeliharaan/add", pemeliharaanasetcontroller.Add)
-	http.HandleFunc("/pemeliharaan/edit", pemeliharaanasetcontroller.Edit)
-	http.HandleFunc("/pemeliharaan/status", pemeliharaanasetcontroller.StatusUpdate)
-	http.HandleFunc("/pemeliharaan/path", pemeliharaanasetcontroller.GetGambar)
+	// // 5. Pemeliharaan
+	// r.GET("/pemeliharaan", pemeliharaanasetcontroller.Index)
+	// r.GET("/pemeliharaan/add", pemeliharaanasetcontroller.Add)
+	// r.GET("/pemeliharaan/edit", pemeliharaanasetcontroller.Edit)
+	// r.GET("/pemeliharaan/status", pemeliharaanasetcontroller.StatusUpdate)
+	// r.GET("/pemeliharaan/path", pemeliharaanasetcontroller.GetGambar)
 
-	// 6. Lokasi aset
-	http.HandleFunc("/lokasi-aset", lokasiasetcontroller.Index)
-	http.HandleFunc("/lokasi-aset/add", lokasiasetcontroller.Add)
-	http.HandleFunc("/lokasi-aset/edit", lokasiasetcontroller.Edit)
-	http.HandleFunc("/lokasi-aset/daftar", lokasiasetcontroller.AsetPegawai)
+	// // 6. Lokasi aset
+	// r.GET("/lokasi-aset", lokasiasetcontroller.Index)
+	// r.GET("/lokasi-aset/add", lokasiasetcontroller.Add)
+	// r.GET("/lokasi-aset/edit", lokasiasetcontroller.Edit)
+	// // r.GET("/lokasi-aset/daftar", lokasiasetcontroller.AsetPegawai)
 
-	// 7. Riwayat Aset
-	http.HandleFunc("/riwayat-aset", riwayatasetcontroller.Index)
-	http.HandleFunc("/riwayat-aset/logs", riwayatasetcontroller.Show)
+	// // 7. Riwayat Aset
+	// r.GET("/riwayat-aset", riwayatasetcontroller.Index)
+	// r.GET("/riwayat-aset/logs", riwayatasetcontroller.Show)
 
-	log.Println("Server running on port 8080")
-	http.ListenAndServe(":8080", nil)
+	// // 8. Bidang
+	// r.GET("/addons/bidang", bidangcontroller.Index)
+	// r.GET("/addons/bidang/create", bidangcontroller.AddBidang)
+	// r.GET("/addons/bidang/edit", bidangcontroller.EditBidang)
+
+	routes.RoutesList(r)
+
+	log.Println("Silahkan akses halaman http://localhost:8080")
+	r.Run(":8080")
 }
