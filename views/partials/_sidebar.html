@@ -76,9 +76,17 @@
                 <span class="menu-title">Bidang</span>
               </a>
             </div>
+            <div class="menu-item">
+              <a class="menu-link {{if eq .path.subMenu "pegawai"}}active{{end}}" href="/addons/pegawai">
+                <span class="menu-bullet">
+                  <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Pegawai</span>
+              </a>
+            </div>
           </div>
         </div>
-        <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{if eq .path.menu "aset"}}show{{end}}">
+        <!-- <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{if eq .path.menu "aset"}}show{{end}}">
           <span class="menu-link">
             <span class="menu-icon">
               <i class="ki-duotone ki-lots-shopping fs-2">
@@ -97,11 +105,11 @@
           </span>
           <div class="menu-sub menu-sub-accordion">
             <div class="menu-item">
-              <a class="menu-link {{if eq .path.subMenu "aset-tik"}}active{{end}}" href="/aset/aset-tik">
+              <a class="menu-link {{if eq .path.subMenu "aset-tetap"}}active{{end}}" href="/aset/tetap">
                 <span class="menu-bullet">
                   <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Aset TIK</span>
+                <span class="menu-title">Aset Tetap</span>
               </a>
             </div>
             <div class="menu-item">
@@ -113,6 +121,14 @@
               </a>
             </div>
           </div>
+        </div> -->
+        <div class="menu-item">
+          <a class="menu-link {{if eq .path.menu "aset"}}active{{end}}" href="/aset">
+            <span class="menu-icon">
+              <i class="fa fa-table-list fs-2"></i>
+            </span>
+            <span class="menu-title">Aset</span>
+          </a>
         </div>
         <div class="menu-item">
           <a class="menu-link {{if eq .path.menu "pemeliharaan"}}active{{end}}" href="/pemeliharaan">

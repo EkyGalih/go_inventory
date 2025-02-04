@@ -36,27 +36,22 @@
             </div>
           </div>
           <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
-            <form action="/addons/tipe/add" method="POST">
+            <form action="/addons/tipe/store" method="POST">
               <div class="mb-3 mt-5">
-                <label for="nama_tipe" class="form-label">Nama Tipe</label>
-                <input type="text" class="form-control" id="nama" name="nama_tipe" />
+                <label for="Nama_Tipe" class="form-label">Nama Tipe</label>
+                <input type="text" class="form-control" id="nama" name="Nama_Tipe" />
               </div>
               <div class="mb-3">
-                <label for="keterangan" class="form-label">Keterangan</label>
-                <textarea name="keterangan" id="deskripsi" class="form-control"></textarea>
+                <label for="Keterangan" class="form-label">Keterangan</label>
+                <textarea name="Keterangan" id="Keterangan" class="form-control"></textarea>
               </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-              <i class="ki-duotone ki-cross fs-5">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i> Batal
+              <i class="fa fa-times fs-5"></i> Batal
             </button>
             <button type="submit" class="btn btn-primary">
-              <i class="ki-duotone ki-plus fs-5"></i> Tambah
+              <i class="fa fa-square-plus fs-5"></i> Tambah
             </button>
           </div>
           </form>
@@ -71,6 +66,13 @@
 {{define "content"}}
 <div class="card card-flush pt-3 mb-5 mb-lg-10">
   <div class="card-body pt-0">
+    {{range .Flashes}}
+    <div class="alert alert-{{if eq .status 200}}success{{else}}danger{{end}} alert-dismissible fade show" role="alert"
+      data-status="{{.status}}">
+      {{.message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{end}}
     <table class="table align-middle table-row-dashed p-7 fs-6 gy-5" id="kt_table_users">
       <thead>
         <tr class="text-start text-gray-600 fw-bolder fs-7 text-uppercase gs-0">
@@ -80,70 +82,52 @@
         </tr>
       </thead>
       <tbody>
+        {{if .tipes}}
         {{ range .tipes}}
         <tr>
           <td>{{.Nama_Tipe}}</td>
-          {{if .Keterangan}}
-          <th>{{removeHTMLTags .Keterangan}}</th>
-          {{else}}
-          <th></th>
-          {{end}}
+          <th>{{.Keterangan}}</th>
           <td>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#EditType{{.Id}}" class="btn btn-warning btn-sm">
+            <button type="button" data-bs-toggle="modal" data-bs-target="#EditType{{.ID}}"
+              class="btn btn-warning btn-sm">
               <i class="ki-duotone ki-pencil fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
               </i>
               Edit
-            </a>
+            </button>
             <!-- Edit:: Begin Modal -->
-            <div class="modal fade" id="EditType{{.Id}}" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="EditType{{.ID}}" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered mw-650px">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h2 class="modal-title">
-                      <i class="ki-duotone ki-pencil fs-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                      </i> Ubah Kategori
+                      <i class="fa fa-edit fs-2"></i> Ubah Kategori
                     </h2>
                     <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                      <i class="ki-duotone ki-cross fs-1">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
+                      <i class="fa fa-times fs-1"></i>
                     </div>
                   </div>
                   <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
-                    <form action="/addons/tipe/update?id={{.Id}}" method="POST">
+                    <form action="/addons/tipe/update/{{.ID}}" method="POST">
                       <div class="mb-3 mt-5">
-                        <label for="nama_tipe" class="form-label">Nama Tipe</label>
-                        <input type="text" class="form-control" id="nama" name="nama_tipe" value="{{.Nama_Tipe}}" />
+                        <label for="Nama_Tipe" class="form-label">Nama Tipe</label>
+                        <input type="text" class="form-control" id="Nama_Tipe" name="Nama_Tipe"
+                          value="{{.Nama_Tipe}}" />
                       </div>
                       <div class="mb-3">
-                        <label for="keterangan" class="form-label">Keterangan</label>
-                        <textarea name="keterangan" id="desk"
+                        <label for="Keterangan" class="form-label">Keterangan</label>
+                        <textarea name="Keterangan" id="Ket"
                           class="form-control">{{if .Keterangan}}{{.Keterangan}}{{end}}</textarea>
                       </div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                      <i class="ki-duotone ki-cross fs-5">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                      </i> Batal
+                      <i class="fa fa-times fs-5"></i> Batal
                     </button>
                     <button type="submit" class="btn btn-success">
-                      <i class="ki-duotone ki-send fs-5">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                      </i> Simpan
+                      <i class="fa fa-floppy-disk fs-5"></i> Simpan
                     </button>
                   </div>
                   </form>
@@ -151,17 +135,13 @@
               </div>
             </div>
             <!-- Edit:: End Modal -->
-            <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteType{{.Id}}">
-              <i class="ki-duotone ki-trash fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i>
+            <butotn type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+              data-bs-target="#DeleteType{{.ID}}">
+              <i class="fa fa-trash fs-2"></i>
               Hapus
-            </a>
+            </butotn>
             <!-- Hapus:: Begin Modal -->
-            <div class="modal fade" id="DeleteType{{.Id}}" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="DeleteType{{.ID}}" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered mw-650px">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -169,10 +149,7 @@
                       Hapus Tipe
                     </h2>
                     <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-                      <i class="ki-duotone ki-cross fs-1">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                      </i>
+                      <i class="fa fa-times fs-1"></i>
                     </div>
                   </div>
                   <div class="modal-body">
@@ -180,20 +157,10 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                      <i class="ki-duotone ki-cross fs-5">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                      </i> Tidak
+                      <i class="fa fa-times fs-5"></i> Tidak
                     </button>
-                    <a href="/addons/tipe/delete?id={{.Id}}" class="btn btn-success">
-                      <i class="ki-duotone ki-check fs-5">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                      </i> Ya
+                    <a href="/addons/tipe/delete/{{.ID}}" class="btn btn-success">
+                      <i class="fa fa-check fs-5"></i> Ya
                     </a>
                   </div>
                 </div>
@@ -203,8 +170,65 @@
           </td>
         </tr>
         {{end}}
+        {{else}}
+        <tr>
+          <td colspan="3" class="text-center p-3">Tidak ada data tipe</td>
+        </tr>
+        {{end}}
       </tbody>
     </table>
   </div>
 </div>
+{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+<script>
+  $(document).ready(function () {
+    ClassicEditor.create(document.querySelector("#Keterangan"), {
+      // Konfigurasi tambahan untuk CKEditor
+      height: 500, // Atur tinggi editor di sini
+    })
+      .then((editor) => {
+        console.log(editor);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    ClassicEditor.create(document.querySelector("#Ket"), {
+      // Konfigurasi tambahan untuk CKEditor
+      height: 500, // Atur tinggi editor di sini
+    })
+      .then((editor) => {
+        console.log(editor);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+  // menghilangkan pesan alert jika status code 200
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".alert").forEach(function (alert) {
+      let statusCode = parseInt(alert.getAttribute("data-status"));
+
+      // Jika status code 200, otomatis hilang setelah 5 detik
+      if (statusCode === 200) {
+        setTimeout(function () {
+          alert.style.transition = "opacity 0.5s";
+          alert.style.opacity = "0";
+          setTimeout(() => alert.remove(), 500);
+        }, 5000);
+      }
+
+      // Jika tombol close diklik, hapus pesan
+      let closeButton = alert.querySelector(".close");
+      if (closeButton) {
+        closeButton.addEventListener("click", function () {
+          alert.style.transition = "opacity 0.5s";
+          alert.style.opacity = "0";
+          setTimeout(() => alert.remove(), 500);
+        });
+      }
+    });
+  });
+</script>
 {{end}}

@@ -19,12 +19,12 @@
         <span class="bullet bg-gray-500 w-5px h-2px"></span>
       </li>
 
-      <li class="breadcrumb-item text-muted">Aset TIK</li>
+      <li class="breadcrumb-item text-muted">Aset Tetap</li>
     </ul>
   </div>
 
   <div class="d-flex align-items-center gap-2 gap-lg-3">
-    <a href="/aset/aset-tik/add" class="btn btn-sm fw-bold btn-primary">
+    <a href="/aset/create" class="btn btn-sm fw-bold btn-primary">
       <i class="fa fa-square-plus fs-2"></i>
       Add Aset
     </a>
@@ -33,7 +33,15 @@
 {{end}}
 {{define "content"}}
 <div class="table-responsive">
-  {{range .aset_tiks}}
+  {{range .Flashes}}
+  <div class="alert alert-{{if eq .status 200}}success{{else}}danger{{end}} alert-dismissible fade show" role="alert"
+    data-status="{{.status}}">
+    {{.message}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {{end}}
+  {{if .asets}}
+  {{range .asets}}
   <div class="card card-flush pt-3 mb-5 pt-10">
     <div class="card-body pt-9 pb-0">
       <div class="d-flex flex-wrap flex-sm-nowrap">
@@ -95,7 +103,7 @@
                   class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3"
                   data-kt-menu="true">
                   <div class="menu-item px-3">
-                    <a href="/aset/aset-tik/edit?id={{ .ID }}" class="menu-link px-3">
+                    <a href="/aset/edit/{{ .ID }}" class="menu-link px-3">
                       <i class="fa fa-pen-to-square fs-2 me-2"></i>
                       Edit
                     </a>
@@ -202,37 +210,9 @@
   </div>
   <!-- Hapus:: End Modal -->
   {{ end }}
-  <ul class="pagination">
-    <!-- Previous Button -->
-    {{if gt .Page 1}}
-    <li class="page-item previous">
-      <a class="page-link page-text" href="?page={{sub .Page 1}}&limit={{.Limit}}">Previous</a>
-    </li>
-    {{else}}
-    <li class="page-item previous disabled">
-      <span class="page-link page-text">Previous</span>
-    </li>
-    {{end}}
-
-    <!-- Page Number Links -->
-    {{range $i := until .TotalPages}}
-    <li class="page-item {{if eq (add $i 1) $.Page}}active{{end}}">
-      <a href="?page={{add $i 1}}&limit={{$.Limit}}" class="page-link">
-        {{add $i 1}}
-      </a>
-    </li>
-    {{end}}
-
-    <!-- Next Button -->
-    {{if lt .Page .TotalPages}}
-    <li class="page-item next">
-      <a class="page-link page-text" href="?page={{add .Page 1}}&limit={{.Limit}}">Next</a>
-    </li>
-    {{else}}
-    <li class="page-item next disabled">
-      <span class="page-link page-text">Next</span>
-    </li>
-    {{end}}
-  </ul>
-</div>
-{{end}}
+  {{else}}
+  <div class="d-flex flex-column flex-center">
+    <h1 class="text-gray-600 fw-bold fs-1">Tidak Ada Data Aset</h1>
+  </div>
+  {{end}}
+  {{end}}

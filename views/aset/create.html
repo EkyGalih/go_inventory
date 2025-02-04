@@ -24,47 +24,52 @@
         <span class="bullet bg-gray-500 w-5px h-2px"></span>
       </li>
 
-      <li class="breadcrumb-item text-muted">Edit</li>
+      <li class="breadcrumb-item text-muted">Tambah</li>
     </ul>
+  </div>
+
+  <div class="d-flex align-items-center gap-2 gap-lg-3">
+    <a href="/aset" class="btn btn-sm fw-bold btn-secondary">
+      <i class="fa fa-arrow-left fs-3"></i>
+      Back
+    </a>
   </div>
 </div>
 {{end}}
 {{define "content"}}
-<div class="card card-flush pt-3 mb-5 pt-10">
+<div class="card card-flush pt-3 mb-5 mb-lg-10">
   <div class="card-body pt-0">
-    <form action="/aset/aset-tik/edit" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="ID" value="{{.aset_tik.ID}}">
+    <form action="/aset/store" method="POST" enctype="multipart/form-data" class="p-5">
       <div class="row">
         <div class="col-lg-6">
           <div class="mb-3">
             <label for="NamaAset" class="form-label">Nama Aset</label>
-            <input type="text" class="form-control" id="NamaAset" name="NamaAset" value="{{.aset_tik.NamaAset}}" />
+            <input type="text" class="form-control" id="NamaAset" name="NamaAset" />
           </div>
           <div class="mb-3">
             <label for="KodeAset" class="form-label">Kode Aset</label>
-            <input type="text" class="form-control" id="KodeAset" name="KodeAset" value="{{ .aset_tik.KodeAset }}" />
+            <input type="text" class="form-control" id="KodeAset" name="KodeAset" />
           </div>
           <div class="mb-3">
             <label for="Merek" class="form-label">Merek</label>
-            <input type="text" class="form-control" id="Merek" name="Merek" value="{{.aset_tik.Merek}}" />
+            <input type="text" class="form-control" id="Merek" name="Merek" />
           </div>
           <div class="mb-3">
             <label for="Model" class="form-label">Model</label>
-            <input type="text" class="form-control" id="Model" name="Model" value="{{ .aset_tik.Model }}" />
+            <input type="text" class="form-control" id="Model" name="Model" />
           </div>
           <div class="mb-3">
             <label for="TanggalPerolehan" class="form-label">Tanggal Perolehan</label>
-            <input type="date" class="form-control" id="TanggalPerolehan" name="TanggalPerolehan"
-              value="{{ formatDate .aset_tik.TanggalPerolehan }}" />
+            <input type="date" class="form-control" id="TanggalPerolehan" name="TanggalPerolehan" />
           </div>
           <div class="mb-3">
             <label for="Nilai" class="form-label">Nilai Aset</label>
             <input type="text" class="form-control" id="Nilai" name="Nilai" onkeypress="isInputNumber(event)"
-              oninput="formatRupiah(this)" value="{{ printf " %.0f" .aset_tik.Nilai }}" />
+              oninput="formatRupiah(this)" />
           </div>
           <div class="mb-3">
             <label for="Deskripsi" class="form-label">Deskripsi</label>
-            <textarea name="Deskripsi" class="form-control" id="Deskripsi">{{ .aset_tik.Deskripsi }}</textarea>
+            <textarea name="Deskripsi" class="form-control" id="Deskripsi"></textarea>
           </div>
           <div class="mb-3">
             <label for="Gambar" class="form-label">Gambar</label>
@@ -73,26 +78,26 @@
                 <p class="image_upload">
                   <label for="userImage">
                     <a class="btn btn-primary btn-sm" rel="nofollow">
-                      <i class='fa fa-file-arrow-up fs-2 text-white'></i> Upload Foto Aset
+                      <i class='fa fa-file-arrow-up fs-2 text-white'>
+                      </i> Upload Foto Aset
                     </a>
                   </label>
-                  <input type="file" name="Gambar" id="userImage" accept="image/*" onchange="loadFile(event)"
-                    value="{{ .aset_tik.Gambar }}">
+                  <input type="file" name="Gambar" id="userImage" accept="image/*" onchange="loadFile(event)">
                 </p>
               </div>
               <div class="col-6">
-                <img class="images w-100 h250px" id="aset" src="{{ .aset_tik.Path }}">
+                <img class="images w-100 h-250px" id="aset">
               </div>
             </div>
           </div>
         </div>
         <div class="col-lg-6">
           <div class="mb-3">
-            <label for="KategoriID" class="form-label">Kategori</label>
+            <label for="Kategori" class="form-label">Kategori</label>
             <select name="KategoriID" class="form-control">
               <option value="">Pilih Kategori</option>
               {{ range .categories }}
-              <option value="{{ .ID }}" {{if eq .ID $.SelectedAset}}selected{{end}}>
+              <option value="{{ .ID }}">
                 {{ .NamaKategori }}
               </option>
               {{ end }}
@@ -103,61 +108,86 @@
             <select name="TipeID" class="form-control">
               <option value="">Pilih Tipe</option>
               {{range .tipes}}
-              <option value="{{.Id}}" {{if eq .Id $.SelectedTipe}}selected{{end}}>{{.Nama_Tipe}}</option>
+              <option value="{{.ID}}">{{.Nama_Tipe}}</option>
               {{end}}
             </select>
           </div>
           <div class="mb-3">
-            <label for="kode_aset" class="form-label">Jenis Aset</label>
-            <input type="text" class="form-control" name="jenis_aset" value="Tetap" readonly>
+            <label for="JenisAset" class="form-label">Jenis Aset</label>
+            <input type="text" class="form-control" name="JenisAset" placeholder="contoh: Laptop, PC, Printer, Scanner">
           </div>
           <div class="mb-3">
             <label for="SerialNumber" class="form-label">Serial Number</label>
-            <input type="text" class="form-control" id="SerialNumber" name="SerialNumber"
-              value="{{ .aset_tik.SerialNumber }}" />
+            <input type="text" class="form-control" id="SerialNumber" name="SerialNumber" />
           </div>
           <div class="mb-3">
             <label for="Status" class="form-label">Status Aset</label>
             <select name="Status" class="form-control">
               <option value="">Pilih Status</option>
-              <option value="Baru" {{if eq .aset_tik.Status "Baru" }}selected{{end}}>Baru</option>
-              <option value="Rusak" {{if eq .aset_tik.Status "Rusak" }}selected{{end}}>Rusak</option>
-              <option value="Hilang" {{if eq .aset_tik.Status "Hilang" }}selected{{end}}>Hilang</option>
-              <option value="Dijual" {{if eq .aset_tik.Status "Dijual" }}selected{{end}}>Dijual</option>
+              <option value="Baru">Baru</option>
+              <option value="Rusak">Rusak</option>
+              <option value="Hilang">Hilang</option>
+              <option value="Dijual">Dijual</option>
             </select>
           </div>
           <div class="row">
             <div class="col-lg-6">
               <div class="mb-3">
                 <label for="Jumlah" class="form-label">Jumlah Aset</label>
-                <input type="text" class="form-control" id="Jumlah" name="Jumlah" value="{{ .aset_tik.Jumlah }}" />
+                <input type="text" class="form-control" id="Jumlah" name="Jumlah" />
               </div>
             </div>
             <div class="col-lg-6">
               <div class="mb-3">
                 <label for="Satuan" class="form-label">Satuan</label>
-                <input type="text" class="form-control" id="Satuan" name="Satuan" value="{{ .aset_tik.Satuan }}" />
+                <input type="text" class="form-control" id="Satuan" name="Satuan" />
               </div>
             </div>
           </div>
           <div class="mb-3">
             <label for="Keterangan" class="form-label">Keterangan</label>
-            <textarea name="Keterangan" class="form-control"
-              id="Keterangan">{{ removeHTMLTags .aset_tik.Keterangan }}</textarea>
+            <textarea name="Keterangan" class="form-control" id="Keterangan"></textarea>
           </div>
           <div class="d-flex justify-content-end mt-10">
-            <a href="/aset/aset-tik" class="btn btn-sm fw-bold btn-secondary me-3">
-              <i class="fa fa-arrow-left fs-2"></i>
-              Back
-            </a>
-            <button type="submit" class="btn btn-success btn-sm">
-              <i class="fa fa-floppy-disk fs-2"></i>
-              Save
+            <button type="reset" class="btn btn-sm fw-bold btn-warning me-3">
+              <i class="fa fa-arrows-rotate fs-2">
+              </i>
+              Reset
             </button>
-          </div> `
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fa fa-square-plus fs-2"></i>
+              Add
+            </button>
+          </div>
         </div>
-      </div>
     </form>
   </div>
 </div>
+{{end}}
+{{define "scripts"}}
+<script type="text/javascript" src="/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+<script>
+  $(document).ready(function () {
+    ClassicEditor.create(document.querySelector("#Deskripsi"), {
+      // Konfigurasi tambahan untuk CKEditor
+      height: 500, // Atur tinggi editor di sini
+    })
+      .then((editor) => {
+        console.log(editor);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    ClassicEditor.create(document.querySelector("#Keterangan"), {
+      // Konfigurasi tambahan untuk CKEditor
+      height: 500, // Atur tinggi editor di sini
+    })
+      .then((editor) => {
+        console.log(editor);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+</script>
 {{end}}

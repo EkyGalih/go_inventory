@@ -4,8 +4,10 @@ package helpers
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"math"
 	"math/rand"
+	"net/http"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -29,7 +31,7 @@ func RenderTemplate(c *gin.Context, tmpl string, data interface{}) error {
 		"formatCurrency":    FormatCurrency,
 		"formatDate":        formatDate,
 		"floatToInt":        ConvertFloatToInt,
-		"removeHTMLTags":    removeHTMLTags,
+		"RemoveHTMLTags":    RemoveHTMLTags,
 		"calculateAssetAge": calculateAssetAge,
 		"add":               add,
 		"sub":               sub,
@@ -42,6 +44,8 @@ func RenderTemplate(c *gin.Context, tmpl string, data interface{}) error {
 	partialTemplates := filepath.Join("views", "partials", "*.html")
 	t, err := t.ParseGlob(partialTemplates)
 	if err != nil {
+		log.Printf("Error parsing partial templates: %v", err)
+		c.String(http.StatusInternalServerError, "Template error: %v", err)
 		return err
 	}
 
@@ -49,11 +53,20 @@ func RenderTemplate(c *gin.Context, tmpl string, data interface{}) error {
 	tmplPath := filepath.Join("views", tmpl)
 	t, err = t.ParseFiles(tmplPath, filepath.Join("views", "partials", "app.html"))
 	if err != nil {
+		log.Printf("Error parsing main template: %v", err)
+		c.String(http.StatusInternalServerError, "Template error: %v", err)
 		return err
 	}
 
 	// Render the template
-	return t.ExecuteTemplate(c.Writer, "app.html", data)
+	err = t.ExecuteTemplate(c.Writer, "app.html", data)
+	if err != nil {
+		log.Printf("Error rendering template: %v", err)
+		c.String(http.StatusInternalServerError, "Template error: %v", err)
+		return err
+	}
+
+	return nil
 }
 
 // ParseCurrencyToFloat mengonversi string mata uang menjadi float64.
@@ -143,7 +156,7 @@ func formatDate(t time.Time) string {
 //
 // Parameter input is the string from which HTML tags will be removed.
 // Returns the input string with all HTML tags removed.
-func removeHTMLTags(input string) string {
+func RemoveHTMLTags(input string) string {
 	re := regexp.MustCompile("<.*?>")
 	return re.ReplaceAllString(input, "")
 }

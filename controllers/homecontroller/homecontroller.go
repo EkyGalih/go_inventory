@@ -10,6 +10,7 @@ func Welcome(c *gin.Context) {
 	path := map[string]string{
 		"menu": "dashboard",
 	}
+	
 	data := map[string]any{
 		"Title": "Dashboard",
 		"path":  path,

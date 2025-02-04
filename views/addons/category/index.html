@@ -86,11 +86,7 @@
         {{ range .categories}}
         <tr>
           <td>{{.NamaKategori}}</td>
-          {{if .Deskripsi}}
-          <th>{{removeHTMLTags .Deskripsi}}</th>
-          {{else}}
-          <th></th>
-          {{end}}
+          <th>{{RemoveHTMLTags .Deskripsi}}</th>
           <td>
             <a href="#" data-bs-toggle="modal" data-bs-target="#EditCategory{{.ID}}" class="btn btn-warning btn-sm">
               <i class="ki-duotone ki-pencil fs-2">
@@ -129,7 +125,7 @@
                       <div class="mb-3">
                         <label for="Deskripsi" class="form-label">Deskripsi</label>
                         <textarea name="Deskripsi" id="Desk"
-                          class="form-control">{{if .Deskripsi}}{{.Deskripsi}}{{end}}</textarea>
+                          class="form-control">{{if .Deskripsi}}{{RemoveHTMLTags .Deskripsi}}{{end}}</textarea>
                       </div>
                   </div>
                   <div class="modal-footer">
