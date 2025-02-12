@@ -3,9 +3,9 @@ package entities
 import "time"
 
 type Tipe struct {
-	ID         string    `gorm:"type:char(36);primaryKey"`
-	Nama_Tipe  string    `gorm:"type:varchar(255)"`
-	Keterangan *string   `gorm:"type:text"`
-	CreatedAt  time.Time `gorm:"autoCreateTime"`
-	UpdatedAt  time.Time `gorm:"autoUpdateTime"`
+	ID         string    `json:"ID"`
+	Nama_Tipe   string    `json:"Nama_Tipe"`
+	Keterangan *string   `json:"Keterangan"`
+	CreatedAt  time.Time `json:"CreatedAt"`
+	UpdatedAt  time.Time `json:"UpdatedAt"`
 }

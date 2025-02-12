@@ -32,7 +32,14 @@
 {{define "content"}}
 <div class="card card-flush pt-3 mb-5 pt-10">
   <div class="card-body pt-0">
-    <form action="/aset/update" method="POST" enctype="multipart/form-data">
+    {{if .Flashes}}
+    <div class="alert alert-danger" role="alert">
+      {{range .Flashes}}
+      <div>{{.}}</div>
+      {{end}}
+    </div>
+    {{end}}
+    <form action="/aset/update/{{.Aset.ID}}" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="ID" value="{{.Aset.ID}}">
       <div class="row">
         <div class="col-lg-6">
@@ -91,8 +98,8 @@
             <label for="KategoriID" class="form-label">Kategori</label>
             <select name="KategoriID" class="form-control">
               <option value="">Pilih Kategori</option>
-              {{ range .categories }}
-              <option value="{{ .ID }}" {{if eq .ID $.SelectedAset}}selected{{end}}>
+              {{ range .kategori }}
+              <option value="{{ .ID }}" {{if eq .ID $.SelectedKategori}}selected{{end}}>
                 {{ .NamaKategori }}
               </option>
               {{ end }}
@@ -102,14 +109,14 @@
             <label for="TipeID" class="form-label">Tipe Aset</label>
             <select name="TipeID" class="form-control">
               <option value="">Pilih Tipe</option>
-              {{range .tipes}}
-              <option value="{{.Id}}" {{if eq .Id $.SelectedTipe}}selected{{end}}>{{.Nama_Tipe}}</option>
+              {{range .tipe}}
+              <option value="{{.ID}}" {{if eq .ID $.SelectedTipe}}selected{{end}}>{{.Nama_Tipe}}</option>
               {{end}}
             </select>
           </div>
           <div class="mb-3">
-            <label for="kode_aset" class="form-label">Jenis Aset</label>
-            <input type="text" class="form-control" name="jenis_aset" value="Tetap" readonly>
+            <label for="JenisAset" class="form-label">Jenis Aset</label>
+            <input type="text" class="form-control" name="JenisAset" placeholder="contoh: Laptop, PC, Printer, Scanner">
           </div>
           <div class="mb-3">
             <label for="SerialNumber" class="form-label">Serial Number</label>

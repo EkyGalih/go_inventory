@@ -105,7 +105,7 @@ func UpdatePegawai(updatedPegawai entities.Pegawai) error {
 
 	found := false
 	for i, Pegawai := range pegawais {
-		if Pegawai.Id == updatedPegawai.Id {
+		if Pegawai.Id	 == updatedPegawai.Id {
 			updatedPegawai.UpdatedAt = time.Now()
 			pegawais[i] = updatedPegawai
 			found = true

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
+	"inventaris/helpers/queryhelpers"
 	"inventaris/models/asetmodel"
+	"inventaris/models/bidangmodel"
 	"inventaris/models/categorymodel"
+	"inventaris/models/pegawaimodel"
 	"inventaris/models/tipemodel"
 	"net/http"
 	"os"
@@ -40,14 +43,26 @@ func Index(c *gin.Context) {
 
 	asets, _ := asetmodel.GetAllAset()
 
-	data := map[string]any{
+	distribusi := queryhelpers.GetDistribusi(asets)
+	if distribusi == nil {
+		distribusi = make(map[string]int)
+	}
+
+	pemegangAsets := queryhelpers.GetPemegangAsets(asets)
+	if pemegangAsets == nil {
+		pemegangAsets = make(map[string][]entities.Distribusi)
+	}
+
+	data := map[string]interface{}{
 		"Title": "Aset Tetap",
 		"path": map[string]string{
 			"menu":    "aset",
 			"subMenu": "aset-tetap",
 		},
-		"asets":   asets,
-		"Flashes": message,
+		"asets":         asets,
+		"Distribusi":    distribusi,
+		"PemegangAsets": pemegangAsets,
+		"Flashes":       message,
 	}
 
 	helpers.RenderTemplate(c, "aset/index.html", data)
@@ -91,8 +106,8 @@ func Add(c *gin.Context) {
 			"menu":    "aset",
 			"subMenu": "aset-tetap",
 		},
-		"Flashes":  flashes,
-		"tipes":     tipe,
+		"Flashes":    flashes,
+		"tipes":      tipe,
 		"categories": kategori,
 	}
 
@@ -170,7 +185,7 @@ func Store(c *gin.Context) {
 		Path:       publicPath,
 		Satuan:     c.PostForm("Satuan"),
 	}
-	
+
 	// simpan ke model
 	if err := asetmodel.CreateAset(aset); err != nil {
 		statusCode = http.StatusInternalServerError
@@ -239,16 +254,21 @@ func Edit(c *gin.Context) {
 		return
 	}
 
+	KategoriID, _ := categorymodel.GetCategoryByID(aset.KategoriID)
+	TipeID, _ := tipemodel.GetTipeByID(aset.TipeID)
+
 	data := map[string]any{
 		"Title": "Tambah Aset Tetap",
 		"path": map[string]string{
 			"menu":    "aset",
 			"subMenu": "aset-tetap",
 		},
-		"Flashes":  flashes,
-		"Aset":     aset,
-		"tipe":     tipe,
-		"kategori": kategori,
+		"Flashes":          flashes,
+		"Aset":             aset,
+		"tipe":             tipe,
+		"SelectedTipe":     TipeID.ID,
+		"kategori":         kategori,
+		"SelectedKategori": KategoriID.ID,
 	}
 
 	helpers.RenderTemplate(c, "aset/edit.html", data)
@@ -290,14 +310,14 @@ func Update(c *gin.Context) {
 		// simpan file
 		if err := c.SaveUploadedFile(file, serverFilePath); err != nil {
 			statusCode = http.StatusInternalServerError
-			session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan: %s", statusCode, err.Error()))
+			session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan saat mengupload file: %s", statusCode, err.Error()))
 			session.Save()
 			c.Redirect(http.StatusFound, "/aset/edit/"+id)
 			return
 		}
 
 		if oldAset.Path != "assets/img/image.png" {
-			oldFilePath := "public/"+ oldAset.Path
+			oldFilePath := "public/" + oldAset.Path
 			if err := os.Remove(oldFilePath); err != nil {
 				session.AddFlash(fmt.Sprintf("%d: Gagal menghapus foto lama : %s", statusCode, err.Error()))
 				session.Save()
@@ -309,6 +329,7 @@ func Update(c *gin.Context) {
 
 	// buat objek aset
 	aset := entities.Aset{
+		ID:           id,
 		JenisAset:    c.PostForm("JenisAset"),
 		KodeAset:     c.PostForm("KodeAset"),
 		NamaAset:     c.PostForm("NamaAset"),
@@ -328,9 +349,14 @@ func Update(c *gin.Context) {
 			re := regexp.MustCompile(`[^0-9,.]`)
 			cleaned := re.ReplaceAllString(input, "")
 
+			cleaned = strings.ReplaceAll(cleaned, ".", "")
 			cleaned = strings.ReplaceAll(cleaned, ",", ".")
 
-			nilai, _ := strconv.ParseFloat(cleaned, 64)
+			nilai, err := strconv.ParseFloat(cleaned, 64)
+			if err != nil {
+				fmt.Println("Error parsing float:", err) // Debugging
+				return 0
+			}
 			return nilai
 		}(),
 		Jumlah: func() int {
@@ -340,13 +366,13 @@ func Update(c *gin.Context) {
 		Keterangan: c.PostForm("Keterangan"),
 		Path:       publicPath,
 		Satuan:     c.PostForm("Satuan"),
-		UpdatedAt: time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	// simpan ke model
 	if err := asetmodel.UpdateAset(aset); err != nil {
 		statusCode = http.StatusInternalServerError
-		session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan: %s", statusCode, err.Error()))
+		session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan saat update aset: %s", statusCode, err.Error()))
 		session.Save()
 		c.Redirect(http.StatusFound, "/aset/edit/"+id)
 		return
@@ -357,6 +383,29 @@ func Update(c *gin.Context) {
 	session.Save()
 
 	c.Redirect(http.StatusFound, "/aset")
+}
+
+func Distribusi(c *gin.Context) {
+	// buat session
+	session := sessions.Default(c)
+	flashes := session.Flashes()
+	session.Save()
+
+	idAset := c.Param("id")
+	aset, _ := asetmodel.GetAsetByID(idAset)
+	pegawai, _ := pegawaimodel.GetAllPegawai()
+	bidang, _ := bidangmodel.GetAllBidang()
+
+	data := map[string]interface{}{
+		"Title":   "Distribusi Aset",
+		"path":    map[string]string{"menu": "aset"},
+		"Flashes": flashes,
+		"aset":    aset,
+		"pegawai": pegawai,
+		"bidang":  bidang,
+	}
+
+	helpers.RenderTemplate(c, "/aset/distribusi.html", data)
 }
 
 func Delete(c *gin.Context) {

@@ -46,7 +46,7 @@
     <div class="card-body pt-9 pb-0">
       <div class="d-flex flex-wrap flex-sm-nowrap">
         <div class="me-7 mb-4">
-          <a href="http://bpkad.test/admin/inventaris/aset-tik/detail-aset/aeaaadc0-dbcd-4b6f-94a1-bcd2e7652bc4"
+          <a href="/aset/detail/{{ .ID }}"
             class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative image-placeholder kt-spinner kt-spinner--sm kt-spinner--brand">
             <img src="{{ .Path }}" alt="{{ .NamaAset }}" class="lazy" loading="lazy" />
           </a>
@@ -80,18 +80,19 @@
             </div>
             <div class="d-flex my-4">
               <div class="me-0">
-                {{ if $.Distribusi }} {{ $dist := index
-                $.distribusi .ID }} {{ $jumlah := .Jumlah |
-                floatToInt }} {{ if eq $dist $jumlah }}
+                {{ if $.Distribusi }}
+                {{ $dist := index $.Distribusi .ID }}
+                {{ $jumlah := .Jumlah }}
+                {{ if eq $dist $jumlah }}
                 <button class="btn btn-sm btn-primary me-3" disabled>
                   Distribusi
                 </button>
                 {{ else }}
-                <a href="/aset/aset-tik/distribusi?aset_id={{ .ID }}" class="btn btn-sm btn-primary me-3">
+                <a href="/aset/distribusi/{{ .ID }}" class="btn btn-sm btn-primary me-3">
                   <i class="fa fa-share fs-4"></i> Distribusi
                 </a>
                 {{ end }} {{ else }}
-                <a href="/aset/aset-tik/distribusi?aset_id={{ .ID }}" class="btn btn-sm btn-primary me-3">
+                <a href="/aset/distribusi/{{ .ID }}" class="btn btn-sm btn-primary me-3">
                   <i class="fa fa-share fs-4"></i> Distribusi
                 </a>
                 {{ end }}
@@ -159,11 +160,12 @@
               <div class="d-flex justify-content-between w-75 mt-auto mb-2">
                 <span class="fw-semibold fs-6 text-gray-500">Distribusi Aset</span>
                 <span class="fw-bold fs-6">
-                  {{ if $.Distribusi }} {{ $dist := index
-                  $.distribusi .ID }} {{ if $dist }}{{ $dist
-                  }}{{ else }}0{{ end }}/{{ .Jumlah }} Unit
-                  {{ else }} 0/{{ .Jumlah }} {{.Satuan}} {{
-                  end }}
+                  {{ if $.Distribusi }}
+                  {{ $dist := index $.Distribusi .ID }}
+                  {{ if $dist }}{{ $dist }}{{ else }}0{{ end }}/{{ .Jumlah }} Unit
+                  {{ else }}
+                  0/{{ .Jumlah }} {{.Satuan}}
+                  {{ end }}
                 </span>
               </div>
             </div>
@@ -172,47 +174,108 @@
       </div>
       <ul class="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bold">
         <li class="nav-item mt-2">
-          <a class="nav-link text-active-primary ms-0 me-10 py-5" href="#">Pemegang Aset</a>
+          <a class="nav-link text-active-primary ms-0 me-10 py-5 togglePemegang" data-id="{{.ID}}" href="#">Pemegang
+            Aset</a>
         </li>
       </ul>
     </div>
   </div>
-  <!-- Hapus:: Begin Modal -->
-  <div class="modal fade" id="HapusAset{{.ID}}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Hapus Aset</h2>
-          <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
-            <i class="ki-duotone ki-cross fs-1">
-              <span class="path1"></span>
-              <span class="path2"></span>
-            </i>
+  <div id="pemegang-{{.ID}}" style="display: none;">
+    <div class="row g-6 mb-6 g-xl-9 mb-xl-9">
+      {{with index $.PemegangAsets .ID}}
+      {{range .}}
+      <div class="col-md-6 col-xxl-4">
+        {{if .Pegawai }}
+        <div class="card">
+          <div class="card-body d-flex flex-center flex-column py-9 px-5">
+            <div class="symbol symbol-65px symbol-circle mb-5">
+              <img src="http://localhost:8080/{{.Pegawai.Foto}}" alt="image">
+              <div
+                class="bg-success position-absolute rounded-circle translate-middle start-100 top-100 border border-4 border-body h-15px w-15px ms-n3 mt-n3">
+              </div>
+            </div>
+            <a href="#" class="fs-4 text-gray-800 text-hover-primary fw-bold mb-0">{{.Pegawai.Name}}</a>
+            <div class="fw-semibold text-gray-500 mb-6">{{.Pegawai.Jabatan}}</div>
+
+            <span class="badge badge-primary">
+              <span class="indicator-label">{{.Bidang.NamaBidang}}</span>
           </div>
         </div>
-        <div class="modal-body">
-          <p class="p-3">
-            Apakah anda yakin ingin menghapus aset
-            <strong><i>{{.NamaAset}}</i></strong>, dengan kode aset
-            <strong><i>{{.KodeAset}}</i></strong>?
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-            <i class="fa fa-circle-xmark fs-4"></i>Tidak
-          </button>
-          <a href="/aset/aset-tik/delete?id={{.ID}}" class="btn btn-success">
-            <i class="fa fa-circle-check fs-4"></i>Ya
+      </div>
+      {{else}}
+      <div class="card h-100 ">
+        <div class="card-body d-flex justify-content-center text-center flex-column p-8">
+          <a href="#" class="text-gray-800 text-hover-primary d-flex flex-column">
+            <div class="symbol symbol-75px mb-5">
+              <i class="fa fa-bank fs-1"></i>
+            </div>
+            <div class="fs-5 fw-bold mb-2">Bidang {{.Bidang.NamaBidang}}</div>
           </a>
         </div>
       </div>
     </div>
-  </div>
-  <!-- Hapus:: End Modal -->
-  {{ end }}
-  {{else}}
-  <div class="d-flex flex-column flex-center">
-    <h1 class="text-gray-600 fw-bold fs-1">Tidak Ada Data Aset</h1>
+    {{end}}
   </div>
   {{end}}
   {{end}}
+</div>
+<!-- Hapus:: Begin Modal -->
+<div class="modal fade" id="HapusAset{{.ID}}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mw-650px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Hapus Aset</h2>
+        <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+          <i class="ki-duotone ki-cross fs-1">
+            <span class="path1"></span>
+            <span class="path2"></span>
+          </i>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="p-3">
+          Apakah anda yakin ingin menghapus aset
+          <strong><i>{{.NamaAset}}</i></strong>, dengan kode aset
+          <strong><i>{{.KodeAset}}</i></strong>?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          <i class="fa fa-circle-xmark fs-4"></i>Tidak
+        </button>
+        <a href="/aset/delete/{{.ID}}" class="btn btn-success">
+          <i class="fa fa-circle-check fs-4"></i>Ya
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Hapus:: End Modal -->
+{{ end }}
+{{else}}
+<div class="d-flex flex-column flex-center">
+  <h1 class="text-gray-600 fw-bold fs-1">Tidak Ada Data Aset</h1>
+</div>
+{{end}}
+{{end}}
+{{define "scripts"}}
+<script>
+  document.querySelectorAll(".togglePemegang").forEach(function (link) {
+    link.addEventListener("click", function (event) {
+      event.preventDefault(); // Mencegah reload halaman
+
+      let asetID = this.getAttribute("data-id"); // Ambil ID dari atribut data-id
+      let pemegangDiv = document.getElementById("pemegang-" + asetID);
+
+      // Toggle display
+      if (pemegangDiv.style.display === "none" || pemegangDiv.style.display === "") {
+        pemegangDiv.style.display = "block";
+        this.classList.add("active");
+      } else {
+        pemegangDiv.style.display = "none";
+        this.classList.remove("active");
+      }
+    });
+  });
+</script>
+{{end}}

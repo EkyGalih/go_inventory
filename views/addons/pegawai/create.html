@@ -64,7 +64,7 @@
 
     .preview {
         margin-top: 20px;
-        width: 300px;
+        width: 165px;
         height: 250px;
         border: 2px dashed #ccc;
         display: flex;
@@ -102,6 +102,16 @@
                     <div class="mb-3">
                         <label for="IdPegawai" class="form-label">ID Pegawai</label>
                         <input type="text" name="IdPegawai" id="IdPegawai" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="BidangID" class="form-label">Pemegang Aset</label>
+                        <select id="BidangID" name="BidangID" class="form-select" data-control="select2"
+                            data-placeholder="Pilih Bidang">
+                            <option></option>
+                            {{range .bidang}}
+                            <option value="{{.ID}}">{{.NamaBidang}}</option>
+                            {{end}}
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="JenisPegawai" class="form-label">Jenis Pegawai</label>

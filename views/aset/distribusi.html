@@ -33,68 +33,100 @@
 {{define "content"}}
 <div class="card card-flush pt-3 mb-5 pt-10">
   <div class="card-body pt-0">
-    <form action="/lokasi-aset/add" method="POST" enctype="multipart/form-data">
+    <form action="/aset/distribusi/store" method="POST">
       <div class="row">
         <div class="col-lg-6">
           <div class="mb-3">
-            <label for="AsetID" class="form-label">Aset</label>
-            <select name="AsetID" id="AsetID" class="form-select" data-control="select2" data-placeholder="Pilih Aset">
-              <option></option>
-              {{ range .asets }}
-              <option value="{{ .ID }}" {{ if eq .ID $.SelectedAset}} selected {{end}}>
-                {{ .NamaAset }}
-              </option>
-              {{ end }}
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="pegawai_id" class="form-label">Pemegang Aset</label>
-            <select name="pegawai_id" id="pegawai_id" class="form-select" data-control="select2"
-              data-placeholder="Pilih Pemegang Aset">
-              <option></option>
-              {{range .pegawai}}
-              <option value="{{.Id}}">{{.Name}} - {{.Nip}}</option>
-              {{end}}
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="bidang_id" class="form-label">Bidang</label>
-            <select name="bidang_id" id="bidang_id" class="form-select" data-control="select2"
-              data-placeholder="Pilih Bidang">
-              <option></option>
-              {{range .bidang}}
-              <option value="{{.Id}}">{{.Nama_Bidang}}</option>
-              {{end}}
-            </select>
-          </div>
-          <div class="mb-3">
             <div class="row">
               <div class="col-lg-6">
-                <label for="tanggal_perolehan" class="form-label">Tanggal Perolehan</label>
-                <input type="date" class="form-control" id="tanggal_perolehan" name="tanggal_perolehan" />
+                <img src="http://localhost:8080/{{.aset.Path}}" alt="{{.aset.NamaAset}}" class="img-fluid"
+                  style="height: 250px; width: 250px;">
               </div>
               <div class="col-lg-6">
-                <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
-                <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" />
+                <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                  <tbody>
+                    <tr>
+                      <td class="text-gray-800">Nama Aset</td>
+                      <td class="text-gray-800 fw-bold">{{.aset.NamaAset}}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-gray-800">Jenis Aset</td>
+                      <td class="text-gray-800">{{.aset.JenisAset}}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-gray-800">Merek & Model</td>
+                      <td class="text-gray-800">{{.aset.Merek}} {{.aset.Model}}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-gray-800">Serial Number</td>
+                      <td class="text-gray-800">{{.aset.SerialNumber}}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-gray-800">Nilai</td>
+                      <td class="text-gray-800 fw-bold" style="color: #43ff32;">{{formatCurrency .aset.Nilai}}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-gray-800">Tipe Aset</td>
+                      <td class="text-gray-800">{{.aset.Tipe.Nama_Tipe}}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-gray-800">Kategori Aset</td>
+                      <td class="text-gray-800">{{.aset.Kategori.NamaKategori}}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
         <div class="col-lg-6">
           <div class="mb-3">
-            <label for="jenis_aset" class="form-label">Jenis Aset</label>
-            <select name="jenis_pemanfaatan" class="form-select" data-control="select2" data-placeholder="Pilih Jenis">
+            <label for="PemegangAset" class="form-label">Pemegang Aset</label>
+            <select id="PemegangAset" class="form-select" data-control="select2" data-placeholder="Pilih Jenis">
               <option></option>
-              <option value="Tetap">Aset Tetap</option>
-              <option value="Habis Pakai">Aset Habis Pakai</option>
+              <option value="pegawai">Pegawai</option>
+              <option value="bidang">Bidang</option>
+            </select>
+          </div>
+          <input type="hidden" name="AsetID" id="AsetID" value="{{.aset.ID}}">
+          <div class="mb-3" id="pegawai" style="display:none;">
+            <label for="PegawaiID" class="form-label">Nama Pemegang Aset</label>
+            <select name="PegawaiID" id="PegawaiID" class="form-select" data-control="select2"
+              data-placeholder="Pilih Pemegang Aset">
+              <option></option>
+              {{range .pegawai}}
+              <option value="{{.Id}}">{{.Name}} - {{.IdPegawai}}</option>
+              {{end}}
+            </select>
+          </div>
+          <div class="mb-3" id="bidang" style="display:none;">
+            <label for="BidangID" class="form-label">Bidang</label>
+            <select name="BidangID" id="BidangID" class="form-select" data-control="select2"
+              data-placeholder="Pilih Bidang">
+              <option></option>
+              {{range .bidang}}
+              <option value="{{.ID}}">{{.NamaBidang}}</option>
+              {{end}}
             </select>
           </div>
           <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan</label>
-            <textarea name="keterangan" class="form-control" id="keterangan"></textarea>
+            <div class="row">
+              <div class="col-lg-6">
+                <label for="TanggalPerolehan" class="form-label">Tanggal Perolehan</label>
+                <input type="date" class="form-control" id="TanggalPerolehan" name="TanggalPerolehan" />
+              </div>
+              <div class="col-lg-6">
+                <label for="TanggalSelesai" class="form-label">Tanggal Selesai</label>
+                <input type="date" class="form-control" id="TanggalSelesai" name="TanggalSelesai" />
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="Keterangan" class="form-label">Keterangan</label>
+            <textarea name="Keterangan" class="form-control" id="Keterangan"></textarea>
           </div>
           <div class="d-flex justify-content-end mt-10">
-            <a href="/lokasi-aset" class="btn btn-sm fw-bold btn-secondary me-3">
+            <a href="/aset" class="btn btn-sm fw-bold btn-secondary me-3">
               <i class="ki-duotone ki-arrow-left fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -111,4 +143,59 @@
     </form>
   </div>
 </div>
+{{end}}
+
+{{define "scripts"}}
+<script type="text/javascript" src="/assets/plugins/custom/ckeditor/ckeditor-classic.bundle.js"></script>
+<script>
+  $(document).ready(function () {
+    ClassicEditor.create(document.querySelector("#Keterangan"), {
+      // Konfigurasi tambahan untuk CKEditor
+      height: 500, // Atur tinggi editor di sini
+    })
+      .then((editor) => {
+        console.log(editor);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    // Menunggu inisialisasi select2
+    $("#PemegangAset").select2({
+      placeholder: "Pilih Jenis"
+    }).on('select2:select', function (e) {
+      const selectedValue = e.target.value; // Dapatkan nilai yang dipilih
+      const pegawaiDiv = document.getElementById("pegawai");
+      const bidangDiv = document.getElementById("bidang");
+
+      // Fungsi untuk toggle tampilan berdasarkan pilihan
+      if (selectedValue === "pegawai") {
+        pegawaiDiv.style.display = 'block'; // Tampilkan pegawai
+        bidangDiv.style.display = 'none';   // Sembunyikan bidang
+      } else if (selectedValue === "bidang") {
+        bidangDiv.style.display = 'block';   // Tampilkan bidang
+        pegawaiDiv.style.display = 'none';   // Sembunyikan pegawai
+      } else {
+        pegawaiDiv.style.display = 'none';   // Sembunyikan pegawai
+        bidangDiv.style.display = 'none';    // Sembunyikan bidang
+      }
+    });
+
+    // Periksa pada saat halaman dimuat
+    const selectedValue = $("#PemegangAset").val();
+    const pegawaiDiv = document.getElementById("pegawai");
+    const bidangDiv = document.getElementById("bidang");
+
+    if (selectedValue === "pegawai") {
+      pegawaiDiv.style.display = 'block'; // Tampilkan pegawai
+      bidangDiv.style.display = 'none';   // Sembunyikan bidang
+    } else if (selectedValue === "bidang") {
+      bidangDiv.style.display = 'block';   // Tampilkan bidang
+      pegawaiDiv.style.display = 'none';   // Sembunyikan pegawai
+    } else {
+      pegawaiDiv.style.display = 'none';   // Sembunyikan pegawai
+      bidangDiv.style.display = 'none';    // Sembunyikan bidang
+    }
+  });
+</script>
 {{end}}

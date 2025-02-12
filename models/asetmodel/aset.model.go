@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -51,6 +52,38 @@ func loadFromFile() ([]entities.Aset, error) {
 	return Aset, nil
 }
 
+// Fungsi untuk membaca data kategori dari file JSON
+func loadKategoriFromFile() ([]entities.Category, error) {
+	file, err := os.ReadFile("data/kategori/kategori.json")
+	if err != nil {
+		return nil, err
+	}
+
+	var kategoriList []entities.Category
+	err = json.Unmarshal(file, &kategoriList)
+	if err != nil {
+		return nil, err
+	}
+
+	return kategoriList, nil
+}
+
+// Fungsi untuk membaca data tipe dari file JSON
+func loadTipeFromFile() ([]entities.Tipe, error) {
+	file, err := os.ReadFile("data/tipe/tipe.json")
+	if err != nil {
+		return nil, err
+	}
+
+	var tipeList []entities.Tipe
+	err = json.Unmarshal(file, &tipeList)
+	if err != nil {
+		return nil, err
+	}
+
+	return tipeList, nil
+}
+
 func saveToFile(Aset []entities.Aset) error {
 	if err := ensureFileExists(); err != nil {
 		return err
@@ -67,14 +100,42 @@ func GetAllAset() ([]entities.Aset, error) {
 }
 
 func GetAsetByID(id string) (*entities.Aset, error) {
-	Aset, err := loadFromFile()
+	AsetList, err := loadFromFile()
 	if err != nil {
 		return nil, err
 	}
 
-	for _, b := range Aset {
-		if b.ID == id {
-			return &b, nil
+	KategoriList, _ := loadKategoriFromFile()
+	TipeList, _ := loadTipeFromFile()
+
+	for _, aset := range AsetList {
+		if aset.ID == id {
+			// Cari Kategori berdasarkan KategoriID
+			for _, kategori := range KategoriList {
+				if kategori.ID == aset.KategoriID {
+					aset.Kategori = &kategori
+					break
+				}
+			}
+
+			// Cari Tipe berdasarkan TipeID
+			for _, tipe := range TipeList {
+				if tipe.ID == aset.TipeID {
+					aset.Tipe = &tipe
+					break
+				}
+			}
+
+			// Debug apakah kategori masih nil
+			if aset.Kategori == nil {
+				log.Println("Kategori tidak ditemukan untuk aset ID:", aset.ID)
+			}
+
+			if aset.Tipe == nil {
+				log.Println("Tipe tidak ditemukan untuk aset ID:", aset.ID)
+			}
+
+			return &aset, nil
 		}
 	}
 

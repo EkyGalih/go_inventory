@@ -21,6 +21,9 @@ func RoutesList(r *gin.Engine) {
 	// 4. Aset Tetap
 	AsetRoutes(r)
 	
+	// 5. Pemeliharaan Aset
+	PemeliharaanRoutes(r)
+
 	// 8. Bidang
 	BidangRoutes(r)	
 	

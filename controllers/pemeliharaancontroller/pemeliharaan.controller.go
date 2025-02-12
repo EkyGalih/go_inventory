@@ -1,11 +1,13 @@
-package pegawaicontroller
+package pemeliharaancontroller
 
 import (
 	"fmt"
 	"inventaris/entities"
 	"inventaris/helpers/helpers"
+	"inventaris/models/asetmodel"
 	"inventaris/models/bidangmodel"
 	"inventaris/models/pegawaimodel"
+	"inventaris/models/pemeliharaanmodel"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,21 +38,18 @@ func Index(c *gin.Context) {
 		}
 	}
 
-	pegawais, _ := pegawaimodel.GetAllPegawai()
-
-	path := map[string]string{
-		"menu":    "addons",
-		"subMenu": "pegawai",
-	}
+	Pemeliharaans, _ := pemeliharaanmodel.GetAllPemeliharaan()
 
 	data := map[string]any{
-		"Title":    "Pegawai",
-		"path":     path,
-		"pegawais": pegawais,
-		"Flashes":  messages,
+		"Title": "Pegawai",
+		"path": map[string]string{
+			"menu": "pemeliharaan",
+		},
+		"Pemeliharaans": Pemeliharaans,
+		"Flashes":       messages,
 	}
 
-	helpers.RenderTemplate(c, "addons/pegawai/index.html", data)
+	helpers.RenderTemplate(c, "pemeliharaan/index.html", data)
 }
 
 func Add(c *gin.Context) {
@@ -70,24 +69,48 @@ func Add(c *gin.Context) {
 		}
 	}
 
-	bidang, err := bidangmodel.GetAllBidang()
-	if err != nil {
-		session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan: %s", http.StatusInternalServerError, err.Error()))
-		session.Save()
-		return
-	}
+	asets, _ := asetmodel.GetAllAset()
 
 	data := map[string]any{
-		"Title": "Tambah Pegawai",
+		"Title": "Tambah Pemeliharaan",
 		"path": map[string]string{
-			"menu":    "addons",
-			"subMenu": "pegawai",
+			"menu": "pemeliharaan",
 		},
-		"bidang":  bidang,
+		"Aset":    asets,
 		"Flashes": messages,
 	}
 
-	helpers.RenderTemplate(c, "addons/pegawai/create.html", data)
+	helpers.RenderTemplate(c, "pemeliharaan/create.html", data)
+}
+
+func GetGambar(c *gin.Context) {
+	// buat session
+	session := sessions.Default(c)
+
+	id := c.Param("id")
+	if id == "" {
+		session.AddFlash("Id Kosong")
+		session.Save()
+		c.Redirect(http.StatusFound, "/pemeliharaan")
+		return
+	}
+
+	aset, err := asetmodel.GetAsetByID(id)
+	if err != nil {
+		session.AddFlash(err.Error())
+		session.Save()
+		c.Redirect(http.StatusFound, "/pemeliharaan")
+		return
+	}
+
+	if aset.Path == "" {
+		session.AddFlash("Gambar tidak ditemukan")
+		session.Save()
+		c.Redirect(http.StatusFound, "/pemeliharaan")
+		return
+	}
+
+	c.Data(http.StatusOK, "text/plain", []byte(aset.Path))
 }
 
 func Store(c *gin.Context) {

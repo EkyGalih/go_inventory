@@ -5,9 +5,9 @@ import (
 )
 
 type Category struct {
-	ID           string    `gorm:"type:char(36);primaryKey"`
-	NamaKategori string    `gorm:"type:varchar(255);column:nama_kategori"`
-	Deskripsi    *string   `gorm:"type:text"`
-	CreatedAt    time.Time `gorm:"autoCreateTime"`
-	UpdatedAt    time.Time `gorm:"autoCreateTime"`
+	ID           string    `json:"ID"`
+	NamaKategori string    `json:"NamaKategori"`
+	Deskripsi    *string   `json:"Deskripsi"`
+	CreatedAt    time.Time `json:"CreatedAt"`
+	UpdatedAt    time.Time `json:"UpdatedAt"`
 }

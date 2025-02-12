@@ -1,12 +1,10 @@
 package entities
 
-import (
-	"time"
-)
+import "time"
 
 type Bidang struct {
-	ID         string    `gorm:"type:char(36);primaryKey"`
-	NamaBidang string    `gorm:"type:varchar(255);column:nama_bidang"`
-	CreatedAt  time.Time `gorm:"autoCreateTime"`
-	UpdatedAt  time.Time `gorm:"autoCreateTime"`
+	ID         string    `json:"ID"`
+	NamaBidang string    `json:"NamaBidang"`
+	CreatedAt  time.Time `json:"CreatedAt"`
+	UpdatedAt  time.Time `json:"UpdatedAt"`
 }
