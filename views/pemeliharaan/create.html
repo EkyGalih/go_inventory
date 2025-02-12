@@ -97,7 +97,10 @@
               </label>
               <input type="file" name="Nota" id="userImage" accept="application/pdf" onchange="loadFilePdf(event)">
             </p>
-            <iframe id="pdf" style="width: 100%; height: 600px; border: none;"></iframe>
+            <p class="text-info">
+              *Upload nota jika perbaikan sudah selesai
+            </p>
+           <iframe id="pdf" style="width: 100%; height: 600px; border: none;"></iframe>
           </div>
         </div>
     </form>
@@ -130,9 +133,9 @@
       });
     });
 
-    ClassicEditor.create(document.querySelector("#kerusakan"), { height: 500 }).catch((error) => { console.error(error); });
-    ClassicEditor.create(document.querySelector("#perbaikan"), { height: 500 }).catch((error) => { console.error(error); });
-    ClassicEditor.create(document.querySelector("#keterangan"), { height: 500 }).catch((error) => { console.error(error); });
+    ClassicEditor.create(document.querySelector("#Kerusakan"), { height: 500 }).catch((error) => { console.error(error); });
+    ClassicEditor.create(document.querySelector("#Perbaikan"), { height: 500 }).catch((error) => { console.error(error); });
+    ClassicEditor.create(document.querySelector("#Keterangan"), { height: 500 }).catch((error) => { console.error(error); });
   });
 </script>
 {{end}}

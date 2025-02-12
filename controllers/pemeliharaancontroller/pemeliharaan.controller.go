@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -119,55 +120,72 @@ func Store(c *gin.Context) {
 	var statusCode int
 	var publicPath string
 
-	file, err := c.FormFile("Foto")
+	file, err := c.FormFile("Nota")
 
-	if file == nil {
-		publicPath = "assets/img/blank.png"
-	} else {
+	if file != nil {
 		if err == nil {
 			// buat direktori jika belum ada
-			uploadDir := "public/uploads/pegawai/"
+			uploadDir := "public/uploads/nota/"
 			if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
 				statusCode = http.StatusInternalServerError
 				session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan: %s", statusCode, err.Error()))
 				session.Save()
-				c.Redirect(http.StatusFound, "/addons/pegawai/create")
+				c.Redirect(http.StatusFound, "/pemeliharaan/create")
 				return
 			}
 
 			// generate nama file unik
 			uniqueFileName := uuid.NewString() + filepath.Ext(file.Filename)
 			serverFilePath := filepath.Join(uploadDir, uniqueFileName)
-			publicPath = "uploads/pegawai/" + uniqueFileName
+			publicPath = "uploads/nota/" + uniqueFileName
 
 			// simpan file
 			if err := c.SaveUploadedFile(file, serverFilePath); err != nil {
 				statusCode = http.StatusInternalServerError
 				session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan: %s", statusCode, err.Error()))
 				session.Save()
-				c.Redirect(http.StatusFound, "/addons/pegawai/create")
+				c.Redirect(http.StatusFound, "/pemeliharaan/create")
 				return
 			}
 		}
 	}
 
-	// buat objek pegawai
-	bidangID := c.PostForm("BidangID")
-	pegawai := entities.Pegawai{
-		Name:         c.PostForm("Name"),
-		IdPegawai:    c.PostForm("IdPegawai"),
-		Foto:         publicPath,
-		JenisPegawai: c.PostForm("JenisPegawai"),
-		Jabatan:      c.PostForm("Jabatan"),
-		BidangID:     &bidangID,
+	// buat objek pemeliharaan
+	asetID := c.PostForm("AsetID")
+	pemeliharaan := entities.Pemeliharaan{
+		AsetID: asetID,
+		TanggalPemeliharaan: func() time.Time {
+			tanggalPemeliharaan, _ := time.Parse("2006-01-02", c.PostForm("TanggalPemeliharaan"))
+			return tanggalPemeliharaan
+		}(),
+		Nota:       &publicPath,
+		Kerusakan:  func() *string { kerusakan := c.PostForm("Kerusakan"); return &kerusakan }(),
+		Perbaikan:  func() *string { perbaikan := c.PostForm("Perbaikan"); return &perbaikan }(),
+		Keterangan: func() *string { keterangan := c.PostForm("Keterangan"); return &keterangan }(),
+		Status: func() string {
+			if publicPath == "" {
+				return "Belum Selesai"
+			}
+			return "Selesai"
+		}(),
+		Biaya: func() float64 {
+			input := c.PostForm("Biaya")
+			re := regexp.MustCompile(`[^0-9,.]`)
+			cleaned := re.ReplaceAllString(input, "")
+
+			cleaned = strings.ReplaceAll(cleaned, ",", ".")
+
+			biaya, _ := strconv.ParseFloat(cleaned, 64)
+			return biaya
+		}(),
 	}
 
 	// simpan ke model
-	if err := pegawaimodel.CreatePegawai(pegawai); err != nil {
+	if err := pemeliharaanmodel.CreatePemeliharaan(pemeliharaan); err != nil {
 		statusCode = http.StatusInternalServerError
 		session.AddFlash(fmt.Sprintf("%d: Terjadi Kesalahan: %s", statusCode, err.Error()))
 		session.Save()
-		c.Redirect(http.StatusFound, "/addons/pegawai/create.html")
+		c.Redirect(http.StatusFound, "/pemeliharaan/create.html")
 		return
 	}
 
@@ -175,7 +193,7 @@ func Store(c *gin.Context) {
 	session.AddFlash(fmt.Sprintf("%d: Data berhasil disimpan", statusCode))
 	session.Save()
 
-	c.Redirect(http.StatusFound, "/addons/pegawai")
+	c.Redirect(http.StatusFound, "/pemeliharaan")
 }
 
 func Edit(c *gin.Context) {
