@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"inventaris/config"
 	"inventaris/routes"
 	"log"
 
@@ -18,6 +19,8 @@ func main() {
 	// config.ConnectDB()
 
 	r := gin.Default()
+	config.ConnectDB()
+	config.InitDB()
 
 	// serve static file from public folder
 	r.Static("/assets", "./public/assets")
@@ -28,7 +31,7 @@ func main() {
 	r.Use(sessions.Sessions("mysession", store))
 
 	routes.RoutesList(r)
-	
+
 	log.Println("Silahkan akses halaman http://localhost:8080")
 	r.Run(":8080")
 }
