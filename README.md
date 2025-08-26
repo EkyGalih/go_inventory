@@ -38,8 +38,8 @@ Aplikasi ini digunakan untuk mencatat, mengelola, dan menampilkan data aset deng
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/username/inventarisasi-aset.git
-cd inventarisasi-aset
+git clone https://github.com/EkyGalih/go_inventory.git
+cd inventaris
 ```
 
 ### 2. Install Dependency
@@ -102,7 +102,7 @@ go run main.go
 
 ## 👨‍💻 Author
 Dibuat oleh **Eky Galih Gunanda**  
-📧 Email: [your.email@example.com](mailto:your.email@example.com)
+📧 Email: [ekkygalih8@gmail.com](mailto:ekkygalih8@gmail.com)
 
 ---
 
